@@ -1,0 +1,46 @@
+{
+  "name": "battleship",
+  "version": "1.0.0",
+  "description": "The Odin Project - JavaScript, Project: Battleship",
+  "main": "webpack.config.js",
+  "dependencies": {
+    "css-loader": "^6.2.0",
+    "html-webpack-plugin": "^5.3.2",
+    "style-loader": "^3.2.1",
+    "webpack": "^5.49.0",
+    "webpack-cli": "^4.7.2"
+  },
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.15.0",
+    "@babel/preset-env": "^7.15.4",
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-config-node": "^4.1.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.24.0",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-react": "^7.24.0",
+    "eslint-plugin-react-hooks": "^1.7.0",
+    "favicons": "^6.2.2",
+    "favicons-webpack-plugin": "^5.0.2",
+    "jest": "^27.1.0",
+    "prettier": "^2.3.2"
+  },
+  "scripts": {
+    "test": "jest",
+    "watch": "webpack --watch",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/craigmclean39/battleship-top.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/craigmclean39/battleship-top/issues"
+  },
+  "homepage": "https://github.com/craigmclean39/battleship-top#readme"
+}
