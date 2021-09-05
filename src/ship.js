@@ -23,4 +23,8 @@ export default class Ship {
     }
     return sunk;
   }
+
+  get length() {
+    return this._status.length;
+  }
 }
