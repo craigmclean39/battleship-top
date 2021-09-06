@@ -3,3 +3,29 @@ html {
   box-sizing: border-box;
   min-height: 100%;
 }
+
+.battleship-grid {
+  width: 45vh;
+  height: 45vh;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  margin: 1rem;
+  grid-gap: 0.1rem;
+}
+
+.battleship-square--empty {
+  background-color: blue;
+}
+
+.battleship-square--ship {
+  background-color: gray;
+}
+
+.battleship-square--empty-hit {
+  background-color: green;
+}
+
+.battleship-square--ship-hit {
+  background-color: red;
+}
