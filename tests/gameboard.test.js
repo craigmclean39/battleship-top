@@ -1,7 +1,13 @@
 import GameBoard from '../src/gameBoard';
 import Ship from '../src/ship';
 
-const { test, expect, describe, beforeAll } = require('@jest/globals');
+const {
+  test,
+  expect,
+  describe,
+  beforeAll,
+  beforeEach,
+} = require('@jest/globals');
 
 const gameBoard = new GameBoard();
 const smallShip = new Ship(3);
@@ -42,26 +48,61 @@ test('Add ship at valid position, expect true', () => {
   );
 });
 
-test('Attack empty spot, should return true', () => {
-  expect(gameBoard.receiveAttack(5, 5)).toBe(true);
+test('Attack empty spot, should return miss', () => {
+  expect(gameBoard.receiveAttack(5, 5)).toBe(GameBoard.attackStatus.miss);
 });
 
-test('Attack a ship, should return true', () => {
-  expect(gameBoard.receiveAttack(0, 0)).toBe(true);
+test('Attack empty spot thats already been attacked, should return invalid', () => {
+  expect(gameBoard.receiveAttack(5, 5)).toBe(GameBoard.attackStatus.invalid);
 });
 
-test('Attack a ship, should return true', () => {
-  expect(gameBoard.receiveAttack(0, 1)).toBe(true);
+test('Attack a ship, should return hit', () => {
+  expect(gameBoard.receiveAttack(0, 0)).toBe(GameBoard.attackStatus.hit);
 });
 
-test('Attack a ship, should return true', () => {
-  expect(gameBoard.receiveAttack(0, 2)).toBe(true);
+test('Attack a ship, should return hit', () => {
+  expect(gameBoard.receiveAttack(0, 1)).toBe(GameBoard.attackStatus.hit);
 });
 
-test('Attack a ship where its already been attacked, should return false', () => {
-  expect(gameBoard.receiveAttack(0, 0)).toBe(false);
+test('Attack a ship, should return hit', () => {
+  expect(gameBoard.receiveAttack(0, 2)).toBe(GameBoard.attackStatus.hit);
 });
 
-test('Attack a ship where its already been attacked, should return false', () => {
-  expect(gameBoard.receiveAttack(0, 1)).toBe(false);
+test('Attack a ship where its already been attacked, should return invalid', () => {
+  expect(gameBoard.receiveAttack(0, 0)).toBe(GameBoard.attackStatus.invalid);
+});
+
+test('Attack a ship where its already been attacked, should return invalid', () => {
+  expect(gameBoard.receiveAttack(0, 1)).toBe(GameBoard.attackStatus.invalid);
+});
+
+test('Attack out of bounds, should return invalid', () => {
+  expect(gameBoard.receiveAttack(100, 100)).toBe(
+    GameBoard.attackStatus.invalid
+  );
+});
+
+describe('Sink All Ships', () => {
+  beforeAll(() => {
+    gameBoard.clearBoard();
+    let tinyShip = new Ship(1);
+    let tinyShip2 = new Ship(1);
+    gameBoard.addShip(tinyShip, 0, 0, GameBoard.direction.down);
+    gameBoard.addShip(tinyShip2, 1, 1, GameBoard.direction.down);
+  });
+
+  test('Are all ships sunk, should return false', () => {
+    expect(gameBoard.areAllShipsSunk()).toBe(false);
+  });
+
+  test('Attack a ship, should return hit', () => {
+    expect(gameBoard.receiveAttack(0, 0)).toBe(GameBoard.attackStatus.hit);
+  });
+  test('Attack a ship, should return hit', () => {
+    expect(gameBoard.receiveAttack(1, 1)).toBe(GameBoard.attackStatus.hit);
+  });
+
+  test('Are all ships sunk, should return true', () => {
+    expect(gameBoard.areAllShipsSunk()).toBe(true);
+  });
 });
