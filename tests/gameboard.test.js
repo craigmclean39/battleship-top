@@ -1,13 +1,7 @@
 import GameBoard from '../src/gameBoard';
 import Ship from '../src/ship';
 
-const {
-  test,
-  expect,
-  describe,
-  beforeAll,
-  beforeEach,
-} = require('@jest/globals');
+const { test, expect, describe, beforeAll } = require('@jest/globals');
 
 const gameBoard = new GameBoard();
 const smallShip = new Ship(3);
@@ -85,8 +79,8 @@ test('Attack out of bounds, should return invalid', () => {
 describe('Sink All Ships', () => {
   beforeAll(() => {
     gameBoard.clearBoard();
-    let tinyShip = new Ship(2);
-    let tinyShip2 = new Ship(1);
+    const tinyShip = new Ship(2);
+    const tinyShip2 = new Ship(1);
     gameBoard.addShip(tinyShip, 0, 0, GameBoard.direction.down);
     gameBoard.addShip(tinyShip2, 1, 1, GameBoard.direction.down);
   });

@@ -58,4 +58,12 @@ export default class GameManager {
   squareClicked(e) {
     console.log(`${e.target.dataset.row}:${e.target.dataset.col}`);
   }
+
+  testSomething() {
+    this.doSomething(3);
+  }
+
+  doSomething() {
+    console.log('DoSomething');
+  }
 }
