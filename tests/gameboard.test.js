@@ -7,37 +7,61 @@ const gameBoard = new GameBoard();
 const smallShip = new Ship(3);
 
 test('Add ship at invalid position, expect false', () => {
-  expect(gameBoard.AddShip(smallShip, -1, -1, GameBoard.direction.right)).toBe(
+  expect(gameBoard.addShip(smallShip, -1, -1, GameBoard.direction.right)).toBe(
     false
   );
 });
 
 test('Add ship at position that will overflow board right, expect false', () => {
-  expect(gameBoard.AddShip(smallShip, 7, 0, GameBoard.direction.right)).toBe(
+  expect(gameBoard.addShip(smallShip, 0, 7, GameBoard.direction.right)).toBe(
     false
   );
 });
 
 test('Add ship at position that will overflow board up, expect false', () => {
-  expect(gameBoard.AddShip(smallShip, 4, 0, GameBoard.direction.up)).toBe(
+  expect(gameBoard.addShip(smallShip, 0, 4, GameBoard.direction.up)).toBe(
     false
   );
 });
 
 test('Add ship at position that will overflow board left, expect false', () => {
-  expect(gameBoard.AddShip(smallShip, 1, 1, GameBoard.direction.left)).toBe(
+  expect(gameBoard.addShip(smallShip, 1, 1, GameBoard.direction.left)).toBe(
     false
   );
 });
 
 test('Add ship at position that will overflow board down, expect false', () => {
-  expect(gameBoard.AddShip(smallShip, 6, 6, GameBoard.direction.down)).toBe(
+  expect(gameBoard.addShip(smallShip, 6, 6, GameBoard.direction.down)).toBe(
     false
   );
 });
 
 test('Add ship at valid position, expect true', () => {
-  expect(gameBoard.AddShip(smallShip, 0, 0, GameBoard.direction.right)).toBe(
+  expect(gameBoard.addShip(smallShip, 0, 0, GameBoard.direction.right)).toBe(
     true
   );
+});
+
+test('Attack empty spot, should return true', () => {
+  expect(gameBoard.receiveAttack(5, 5)).toBe(true);
+});
+
+test('Attack a ship, should return true', () => {
+  expect(gameBoard.receiveAttack(0, 0)).toBe(true);
+});
+
+test('Attack a ship, should return true', () => {
+  expect(gameBoard.receiveAttack(0, 1)).toBe(true);
+});
+
+test('Attack a ship, should return true', () => {
+  expect(gameBoard.receiveAttack(0, 2)).toBe(true);
+});
+
+test('Attack a ship where its already been attacked, should return false', () => {
+  expect(gameBoard.receiveAttack(0, 0)).toBe(false);
+});
+
+test('Attack a ship where its already been attacked, should return false', () => {
+  expect(gameBoard.receiveAttack(0, 1)).toBe(false);
 });
