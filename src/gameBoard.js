@@ -62,10 +62,10 @@ export default class GameBoard {
     }
   }
 
+  // TODO: REMOVE
   printBoard() {
     let row = '';
     for (let i = 0; i < 8; i++) {
-      row = '';
       for (let j = 0; j < 8; j++) {
         if (this._boardState[i][j] === GameBoard.boardSpaceStatus.empty) {
           row += '_';
@@ -81,8 +81,9 @@ export default class GameBoard {
           row += '0';
         }
       }
-      console.log(row);
+      row += '\n';
     }
+    console.log(row);
   }
 
   // Public interface to add a ship, returns true if ship is places in valid position
@@ -181,6 +182,10 @@ export default class GameBoard {
         if (hitStatus.hit) {
           this._ships[i].ship.hit(hitStatus.position);
           this._boardState[row][col] = GameBoard.boardSpaceStatus.shipHit;
+          if (this._ships[i].ship.isSunk) {
+            return GameBoard.attackStatus.sunk;
+          }
+
           break;
         }
       }
