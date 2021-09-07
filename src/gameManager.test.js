@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-/* import GameBoard from './gameBoard';
+import GameBoard from './gameBoard';
 import GameManager from './gameManager';
 
 const {
@@ -34,6 +34,7 @@ afterAll(() => {
 
 test('Simulate Player Click on 0,0, expect to update dom at 0, 0, with miss', () => {
   const gm = new GameManager();
+  gm.doTestSetup();
 
   const evt = {
     target: {
@@ -54,6 +55,7 @@ test('Simulate Player Click on 0,0, expect to update dom at 0, 0, with miss', ()
 
 test('Simulate Player Click on row 7, col 0, expect to update dom at 7, 0, with hit', () => {
   const gm = new GameManager();
+  gm.doTestSetup();
 
   const evt = {
     target: {
@@ -73,6 +75,7 @@ test('Simulate Player Click on row 7, col 0, expect to update dom at 7, 0, with 
 });
 
 const gm1 = new GameManager();
+gm1.doTestSetup();
 describe('Sink All Ships', () => {
   test('Simulate Player Click on row 6, col 0, expect to update dom at 6, 0, with sunk', () => {
     const evt1 = {
@@ -106,4 +109,4 @@ describe('Sink All Ships', () => {
       GameBoard.attackStatus.sunk
     );
   });
-}); */
+});
