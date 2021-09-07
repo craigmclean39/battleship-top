@@ -7,19 +7,79 @@ export default class BattleshipDom {
 
     this._body = document.querySelector('body');
 
-    this._tempMessages = DomHelper.createElement('div', 'temp-messages');
-    this._tempMessages.innerText = 'Battleship';
+    this._title = DomHelper.createElement('div', 'battleship-title');
+    this._titleContent = DomHelper.createElement(
+      'h1',
+      'battleship-title__content'
+    );
+    this._titleContent.innerText = 'BATTLESHIP';
+    this._title.appendChild(this._titleContent);
 
-    this._playerBoard = DomHelper.createElement('div', 'battleship-grid');
-    this._cpuBoard = DomHelper.createElement('div', 'battleship-grid');
+    this._playingField = DomHelper.createElement(
+      'div',
+      'battleship-playing-field'
+    );
+
+    this._playerField = DomHelper.createElement(
+      'div',
+      'battleship-player-field'
+    );
+    this._cpuField = DomHelper.createElement('div', 'battleship-player-field');
+
+    this._playerTitle = DomHelper.createElement(
+      'h2',
+      'battleship-player-field__title'
+    );
+    this._cpuTitle = DomHelper.createElement(
+      'h2',
+      'battleship-player-field__title'
+    );
+
+    this._playerTitle.innerText = 'You';
+    this._cpuTitle.innerText = 'CPU';
+
+    this._playerBoard = DomHelper.createElement(
+      'div',
+      'battleship-player-field__battleship-grid'
+    );
+    this._cpuBoard = DomHelper.createElement(
+      'div',
+      'battleship-player-field__battleship-grid'
+    );
+
+    this._playerMessage = DomHelper.createElement(
+      'div',
+      'battleship-player-field__message'
+    );
+    this._cpuMessage = DomHelper.createElement(
+      'div',
+      'battleship-player-field__message'
+    );
+
+    this._playerMessage.innerText = '...';
+    this._cpuMessage.innerText = '...';
+
+    this._tempMessages = DomHelper.createElement('div', 'temp-messages');
+    this._tempMessages.innerText = '';
+
+    this._playerField.appendChild(this._playerTitle);
+    this._playerField.appendChild(this._playerBoard);
+    this._playerField.appendChild(this._playerMessage);
+
+    this._cpuField.appendChild(this._cpuTitle);
+    this._cpuField.appendChild(this._cpuBoard);
+    this._cpuField.appendChild(this._cpuMessage);
 
     this._startButton = DomHelper.createElement('button', 'start-button');
     this._startButton.innerText = 'Start';
     this._startButton.addEventListener('click', this._startButtonPressed);
 
+    this._playingField.appendChild(this._playerField);
+    this._playingField.appendChild(this._cpuField);
+
+    this._body.appendChild(this._title);
+    this._body.appendChild(this._playingField);
     this._body.appendChild(this._tempMessages);
-    this._body.appendChild(this._playerBoard);
-    this._body.appendChild(this._cpuBoard);
     this._body.appendChild(this._startButton);
 
     BattleshipDom.createBoard(this._playerBoard);
@@ -110,15 +170,25 @@ export default class BattleshipDom {
       message = "It's a hit!";
     } else if (status === AttackStatus.sunk) {
       message = 'You sunk a ship!';
-    } else if (status === AttackStatus.sunk) {
-      message = "It's a miss";
+    } else if (status === AttackStatus.miss) {
+      message = "It's a miss.";
     }
 
-    this._tempMessages.innerText = `Player attacks row ${row} column ${col}. ${message}`;
+    this._cpuMessage.innerText = `You've attacked. ${message}`;
   }
 
   receiveCpuMove(row, col, status) {
     BattleshipDom.receiveMove(row, col, status, this._playerBoard);
+    let message = '';
+    if (status === AttackStatus.hit) {
+      message = 'The CPU hit one of your ships!';
+    } else if (status === AttackStatus.sunk) {
+      message = 'The CPU sunk one of your ships!';
+    } else if (status === AttackStatus.miss) {
+      message = 'The CPU missed.';
+    }
+
+    this._playerMessage.innerText = `${message}`;
   }
 
   static receiveMove(row, col, status, board) {
