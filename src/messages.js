@@ -8,6 +8,8 @@ export const GameState = {
 
 export const GameMessages = {
   StartGame: 0,
+  RedrawCpuBoard: 1,
+  ReDrawPlayerBoard: 2,
 };
 
 export const BoardSpaceStatus = {
@@ -15,6 +17,7 @@ export const BoardSpaceStatus = {
   emptyHit: 1,
   ship: 2,
   shipHit: 3,
+  shipSunk: 4,
 };
 
 export const Direction = {

@@ -139,6 +139,14 @@ export default class GameBoard {
           this._ships[i].ship.hit(hitStatus.position);
           this._boardState[row][col] = BoardSpaceStatus.shipHit;
           if (this._ships[i].ship.isSunk) {
+            this._boardState[row][col] = BoardSpaceStatus.shipSunk;
+
+            const coords = GameBoard.getShipCoords(this._ships[i]);
+            for (let j = 0; j < coords.length; j++) {
+              this._boardState[coords[j].row][coords[j].col] =
+                BoardSpaceStatus.shipSunk;
+            }
+
             return AttackStatus.sunk;
           }
 
@@ -150,6 +158,40 @@ export default class GameBoard {
     }
 
     return AttackStatus.invalid;
+  }
+
+  static getShipCoords(ship) {
+    const coords = [];
+    let { row } = ship;
+    let { col } = ship;
+    coords.push({ row, col });
+
+    for (let i = 1; i < ship.ship.length; i++) {
+      switch (ship.direction) {
+        case Direction.down: {
+          row += 1;
+          break;
+        }
+        case Direction.up: {
+          row -= 1;
+          break;
+        }
+        case Direction.right: {
+          col += 1;
+          break;
+        }
+        case Direction.left: {
+          col -= 1;
+          break;
+        }
+        default:
+          break;
+      }
+
+      coords.push({ row, col });
+    }
+
+    return coords;
   }
 
   static _checkIfCoordinateIsInShipBounds(row, col, shipWithInfo) {

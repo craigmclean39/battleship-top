@@ -77,3 +77,8 @@ html {
   background-color: #d62828;
   border: solid 1px #ac2020;
 }
+
+.battleship-square--ship-sunk {
+  background-color: #000814;
+  border: solid 1px #000814;
+}

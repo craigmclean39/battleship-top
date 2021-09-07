@@ -192,7 +192,14 @@ export default class GameManager {
     switch (msg) {
       case GameMessages.StartGame: {
         this._handleGameStartMessage();
-
+        break;
+      }
+      case GameMessages.ReDrawPlayerBoard: {
+        this._battleshipDom.setPlayerBoard(this._playerBoard._boardState);
+        break;
+      }
+      case GameMessages.RedrawCpuBoard: {
+        this._battleshipDom.setCpuBoard(this._cpuBoard._boardState);
         break;
       }
       default:

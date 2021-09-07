@@ -154,6 +154,10 @@ export default class BattleshipDom {
             square.classList.add('battleship-square--ship-hit');
             break;
           }
+          case BoardSpaceStatus.shipSunk: {
+            square.classList.add('battleship-square--ship-sunk');
+            break;
+          }
           default:
             break;
         }
@@ -170,6 +174,8 @@ export default class BattleshipDom {
       message = "It's a hit!";
     } else if (status === AttackStatus.sunk) {
       message = 'You sunk a ship!';
+
+      this._sendMessage(GameMessages.RedrawCpuBoard);
     } else if (status === AttackStatus.miss) {
       message = "It's a miss.";
     }
@@ -184,6 +190,7 @@ export default class BattleshipDom {
       message = 'The CPU hit one of your ships!';
     } else if (status === AttackStatus.sunk) {
       message = 'The CPU sunk one of your ships!';
+      this._sendMessage(GameMessages.ReDrawPlayerBoard);
     } else if (status === AttackStatus.miss) {
       message = 'The CPU missed.';
     }
@@ -202,13 +209,11 @@ export default class BattleshipDom {
         squares[i].className = '';
         squares[i].classList.add('battleship-square');
 
-        if (
-          Number(status) === AttackStatus.hit ||
-          Number(status) === AttackStatus.sunk
-        ) {
+        if (Number(status) === AttackStatus.hit) {
           squares[i].classList.add('battleship-square--ship-hit');
-        }
-        if (Number(status) === AttackStatus.miss) {
+        } else if (Number(status) === AttackStatus.sunk) {
+          squares[i].classList.add('battleship-square--ship-sunk');
+        } else if (Number(status) === AttackStatus.miss) {
           squares[i].classList.add('battleship-square--empty-hit');
         }
         break;
