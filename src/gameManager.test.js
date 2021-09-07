@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import GameBoard from './gameBoard';
+/* import GameBoard from './gameBoard';
 import GameManager from './gameManager';
 
 const {
@@ -17,6 +17,12 @@ const {
 beforeAll(() => {
   jest
     .spyOn(GameManager.prototype, 'sendPlayerMoveToDom')
+    .mockImplementation(() => {
+      // console.log('Spying on sendPlayerMoveToDom');
+    });
+
+  jest
+    .spyOn(GameManager.prototype, 'sendCpuMoveToDom')
     .mockImplementation(() => {
       // console.log('Spying on sendPlayerMoveToDom');
     });
@@ -100,4 +106,4 @@ describe('Sink All Ships', () => {
       GameBoard.attackStatus.sunk
     );
   });
-});
+}); */

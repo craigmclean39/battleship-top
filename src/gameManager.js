@@ -35,16 +35,37 @@ export default class GameManager {
     this._playerBoard.addShip(playerBattleship, 0, 3, GameBoard.direction.down);
     this._playerBoard.addShip(playerCarrier, 0, 4, GameBoard.direction.down);
 
-    this._cpuBoard.addShip(cpuDestroyer, 7, 0, GameBoard.direction.up);
+    /* this._cpuBoard.addShip(cpuDestroyer, 7, 0, GameBoard.direction.up);
     this._cpuBoard.addShip(cpuSubmarine, 7, 1, GameBoard.direction.up);
     this._cpuBoard.addShip(cpuCruiser, 7, 2, GameBoard.direction.up);
     this._cpuBoard.addShip(cpuBattleship, 7, 3, GameBoard.direction.up);
-    this._cpuBoard.addShip(cpuCarrier, 7, 4, GameBoard.direction.up);
+    this._cpuBoard.addShip(cpuCarrier, 7, 4, GameBoard.direction.up); */
+
+    GameManager._randomlyPlaceShips(
+      [cpuDestroyer, cpuSubmarine, cpuCarrier, cpuCruiser, cpuBattleship],
+      this._cpuBoard
+    );
 
     this._battleshipDom = new BattleshipDom();
     this._battleshipDom.setClickEventHandler(this.squareClicked);
     this._battleshipDom.setPlayerBoard(this._playerBoard._boardState);
     this._battleshipDom.setCpuBoard(this._cpuBoard._boardState);
+  }
+
+  static _randomlyPlaceShips(ships, board) {
+    //Pick a random spot and direction, attempt to add ship
+
+    for (let i = 0; i < ships.length; i++) {
+      let validPlacement = false;
+
+      while (!validPlacement) {
+        let row = Math.round(Math.random() * 7);
+        let col = Math.round(Math.random() * 7);
+        let dir = Math.round(Math.random() * 3);
+
+        validPlacement = board.addShip(ships[i], row, col, dir);
+      }
+    }
   }
 
   isGameOver() {
@@ -79,9 +100,13 @@ export default class GameManager {
       // if it's a valid selection, send info to update the dom
       this._gameState = GameManager.GameState.transition;
       this.sendPlayerMoveToDom(selection.row, selection.col, selectionStatus);
-      this._gameState = GameManager.GameState.cpuTurn;
 
-      this.doCpuTurn();
+      if (this.isGameOver()) {
+        this.doGameOver();
+      } else {
+        this._gameState = GameManager.GameState.cpuTurn;
+        this.doCpuTurn();
+      }
     }
   }
 
@@ -102,13 +127,24 @@ export default class GameManager {
 
     this._gameState = GameManager.GameState.transition;
     this.sendCpuMoveToDom(row, col, selectionStatus);
-    this._gameState = GameManager.GameState.playerTurn;
+
+    if (this.isGameOver()) {
+      this.doGameOver();
+    } else {
+      this._gameState = GameManager.GameState.playerTurn;
+    }
   }
 
   sendCpuMoveToDom(row, col, status) {
     this._battleshipDom.receiveCpuMove(row, col, status);
   }
 
+  doGameOver() {
+    this._gameState = GameManager.GameState.gameOver;
+    this._battleshipDom.receiveGameOver();
+  }
+
+  // This is for tests to be able to set gamestate and run properly
   set gameState(value) {
     this._gameState = value;
   }

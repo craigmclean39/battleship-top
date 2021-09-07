@@ -5,9 +5,13 @@ export default class BattleshipDom {
   constructor() {
     this._body = document.querySelector('body');
 
+    this._tempMessages = DomHelper.createElement('div', 'temp-messages');
+    this._tempMessages.innerText = 'Battleship';
+
     this._playerBoard = DomHelper.createElement('div', 'battleship-grid');
     this._cpuBoard = DomHelper.createElement('div', 'battleship-grid');
 
+    this._body.appendChild(this._tempMessages);
     this._body.appendChild(this._playerBoard);
     this._body.appendChild(this._cpuBoard);
 
@@ -15,11 +19,11 @@ export default class BattleshipDom {
   }
 
   setPlayerBoard(boardState) {
-    BattleshipDom.setBoard(this._playerBoard, boardState, 'player');
+    BattleshipDom.setBoard(this._playerBoard, boardState, 'player', false);
   }
 
   setCpuBoard(boardState) {
-    BattleshipDom.setBoard(this._cpuBoard, boardState, 'cpu');
+    BattleshipDom.setBoard(this._cpuBoard, boardState, 'cpu', true);
   }
 
   setClickEventHandler(callback) {
@@ -40,7 +44,7 @@ export default class BattleshipDom {
     }
   }
 
-  static setBoard(board, boardState, player) {
+  static setBoard(board, boardState, player, hidden) {
     while (board.lastChild) {
       board.removeChild(board.firstChild);
     }
@@ -62,7 +66,11 @@ export default class BattleshipDom {
             break;
           }
           case GameBoard.boardSpaceStatus.ship: {
-            square.classList.add('battleship-square--ship');
+            if (!hidden) {
+              square.classList.add('battleship-square--ship');
+            } else {
+              square.classList.add('battleship-square--empty');
+            }
             break;
           }
           case GameBoard.boardSpaceStatus.shipHit: {
@@ -79,6 +87,17 @@ export default class BattleshipDom {
 
   receivePlayerMove(row, col, status) {
     BattleshipDom.receiveMove(row, col, status, this._cpuBoard);
+
+    let message = '';
+    if (status === GameBoard.attackStatus.hit) {
+      message = "It's a hit!";
+    } else if (status === GameBoard.attackStatus.sunk) {
+      message = 'You sunk a ship!';
+    } else if (status === GameBoard.attackStatus.sunk) {
+      message = "It's a miss";
+    }
+
+    this._tempMessages.innerText = `Player attacks row ${row} column ${col}. ${message}`;
   }
 
   receiveCpuMove(row, col, status) {
@@ -108,5 +127,9 @@ export default class BattleshipDom {
         break;
       }
     }
+  }
+
+  receiveGameOver() {
+    this._tempMessages.innerText = 'Game Over';
   }
 }

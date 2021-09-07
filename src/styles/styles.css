@@ -4,6 +4,11 @@ html {
   min-height: 100%;
 }
 
+.temp-messages {
+  width: 100vw;
+  font-size: 3rem;
+}
+
 .battleship-grid {
   width: 45vh;
   height: 45vh;
