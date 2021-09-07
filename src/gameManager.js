@@ -7,10 +7,12 @@ export default class GameManager {
     playerTurn: 0,
     cpuTurn: 1,
     gameOver: 2,
+    transition: 3,
   };
 
   constructor() {
     this._gameState = GameManager.GameState.playerTurn;
+    this.squareClicked = this.squareClicked.bind(this);
 
     this._playerBoard = new GameBoard();
     this._cpuBoard = new GameBoard();
@@ -56,14 +58,32 @@ export default class GameManager {
   }
 
   squareClicked(e) {
-    console.log(`${e.target.dataset.row}:${e.target.dataset.col}`);
+    // The Player has clicked a square
+    if (this._gameState === GameManager.GameState.playerTurn) {
+      if (e.target.dataset.board === 'cpu') {
+        this.playerSelection({
+          row: Number(e.target.dataset.row),
+          col: Number(e.target.dataset.col),
+        });
+      }
+    }
   }
 
-  testSomething() {
-    this.doSomething(3);
+  playerSelection(selection) {
+    const selectionStatus = this._cpuBoard.receiveAttack(
+      selection.row,
+      selection.col
+    );
+
+    // if it's a valid selection, send info to update the dom
+    this._gameState = GameManager.GameState.transition;
+
+    // TODO: NEED an update board function
+    this._battleshipDom.setCpuBoard(this._cpuBoard._boardState);
+    this._gameState = GameManager.GameState.playerTurn;
+
+    this.sendPlayerMoveToDom(selection.row, selection.col, selectionStatus);
   }
 
-  doSomething() {
-    console.log('DoSomething');
-  }
+  sendPlayerMoveToDom(row, col, status) {}
 }

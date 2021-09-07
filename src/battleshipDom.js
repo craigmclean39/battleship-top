@@ -15,11 +15,11 @@ export default class BattleshipDom {
   }
 
   setPlayerBoard(boardState) {
-    BattleshipDom.setBoard(this._playerBoard, boardState);
+    BattleshipDom.setBoard(this._playerBoard, boardState, 'player');
   }
 
   setCpuBoard(boardState) {
-    BattleshipDom.setBoard(this._cpuBoard, boardState);
+    BattleshipDom.setBoard(this._cpuBoard, boardState, 'cpu');
   }
 
   setClickEventHandler(callback) {
@@ -40,7 +40,7 @@ export default class BattleshipDom {
     }
   }
 
-  static setBoard(board, boardState) {
+  static setBoard(board, boardState, player) {
     while (board.lastChild) {
       board.removeChild(board.firstChild);
     }
@@ -50,6 +50,7 @@ export default class BattleshipDom {
         const square = DomHelper.createElement('div');
         square.dataset.row = i;
         square.dataset.col = j;
+        square.dataset.board = player;
         switch (boardState[i][j]) {
           case GameBoard.boardSpaceStatus.empty: {
             square.classList.add('battleship-square--empty');

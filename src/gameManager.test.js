@@ -2,23 +2,91 @@
  * @jest-environment jsdom
  */
 
+import GameBoard from './gameBoard';
 import GameManager from './gameManager';
 
 const { test, expect, beforeAll, jest, afterAll } = require('@jest/globals');
 
 beforeAll(() => {
-  jest.spyOn(GameManager.prototype, 'doSomething').mockImplementation(() => {
-    console.log('Spying on DoSomething');
-  });
+  jest
+    .spyOn(GameManager.prototype, 'sendPlayerMoveToDom')
+    .mockImplementation(() => {
+      // console.log('Spying on sendPlayerMoveToDom');
+    });
 });
 
 afterAll(() => {
   jest.restoreAllMocks();
 });
 
-test('GameManager Spy Test', () => {
+test('Simulate Player Click on 0,0, expect to update dom at 0, 0, with miss', () => {
   const gm = new GameManager();
 
-  gm.testSomething();
-  expect(gm.doSomething).toBeCalledWith(3);
+  const evt = {
+    target: {
+      dataset: {
+        row: 0,
+        col: 0,
+        board: 'cpu',
+      },
+    },
+  };
+  gm.squareClicked(evt);
+  expect(gm.sendPlayerMoveToDom).toBeCalledWith(
+    0,
+    0,
+    GameBoard.attackStatus.miss
+  );
+});
+
+test('Simulate Player Click on row 7, col 0, expect to update dom at 7, 0, with hit', () => {
+  const gm = new GameManager();
+
+  const evt = {
+    target: {
+      dataset: {
+        row: 7,
+        col: 0,
+        board: 'cpu',
+      },
+    },
+  };
+  gm.squareClicked(evt);
+  expect(gm.sendPlayerMoveToDom).toBeCalledWith(
+    7,
+    0,
+    GameBoard.attackStatus.hit
+  );
+});
+
+test('Simulate Player Click on row 6, col 0, expect to update dom at 6, 0, with sunk', () => {
+  const gm = new GameManager();
+
+  const evt2 = {
+    target: {
+      dataset: {
+        row: 6,
+        col: 0,
+        board: 'cpu',
+      },
+    },
+  };
+
+  const evt1 = {
+    target: {
+      dataset: {
+        row: 7,
+        col: 0,
+        board: 'cpu',
+      },
+    },
+  };
+
+  gm.squareClicked(evt1);
+  gm.squareClicked(evt2);
+  expect(gm.sendPlayerMoveToDom).toBeCalledWith(
+    6,
+    0,
+    GameBoard.attackStatus.sunk
+  );
 });
