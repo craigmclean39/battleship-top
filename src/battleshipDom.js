@@ -31,10 +31,10 @@ export default class BattleshipDom {
   static createBoard(board) {
     for (let i = 0; i < 8; i++) {
       for (let j = 0; j < 8; j++) {
-        const square = DomHelper.createElement(
-          'div',
-          'battleship-square--empty'
-        );
+        const square = DomHelper.createElement('div', [
+          'battleship-square--empty',
+          'battleship-square',
+        ]);
         board.appendChild(square);
       }
     }
@@ -51,6 +51,7 @@ export default class BattleshipDom {
         square.dataset.row = i;
         square.dataset.col = j;
         square.dataset.board = player;
+        square.classList.add('battleship-square');
         switch (boardState[i][j]) {
           case GameBoard.boardSpaceStatus.empty: {
             square.classList.add('battleship-square--empty');
@@ -72,6 +73,39 @@ export default class BattleshipDom {
             break;
         }
         board.appendChild(square);
+      }
+    }
+  }
+
+  receivePlayerMove(row, col, status) {
+    BattleshipDom.receiveMove(row, col, status, this._cpuBoard);
+  }
+
+  receiveCpuMove(row, col, status) {
+    BattleshipDom.receiveMove(row, col, status, this._playerBoard);
+  }
+
+  static receiveMove(row, col, status, board) {
+    const squares = board.querySelectorAll('.battleship-square');
+
+    for (let i = 0; i < squares.length; i++) {
+      if (
+        Number(squares[i].dataset.row) === row &&
+        Number(squares[i].dataset.col) === col
+      ) {
+        squares[i].className = '';
+        squares[i].classList.add('battleship-square');
+
+        if (
+          Number(status) === GameBoard.attackStatus.hit ||
+          Number(status) === GameBoard.attackStatus.sunk
+        ) {
+          squares[i].classList.add('battleship-square--ship-hit');
+        }
+        if (Number(status) === GameBoard.attackStatus.miss) {
+          squares[i].classList.add('battleship-square--empty-hit');
+        }
+        break;
       }
     }
   }

@@ -5,7 +5,14 @@
 import GameBoard from './gameBoard';
 import GameManager from './gameManager';
 
-const { test, expect, beforeAll, jest, afterAll } = require('@jest/globals');
+const {
+  test,
+  expect,
+  beforeAll,
+  describe,
+  jest,
+  afterAll,
+} = require('@jest/globals');
 
 beforeAll(() => {
   jest
@@ -59,34 +66,38 @@ test('Simulate Player Click on row 7, col 0, expect to update dom at 7, 0, with 
   );
 });
 
-test('Simulate Player Click on row 6, col 0, expect to update dom at 6, 0, with sunk', () => {
-  const gm = new GameManager();
-
-  const evt2 = {
-    target: {
-      dataset: {
-        row: 6,
-        col: 0,
-        board: 'cpu',
+const gm1 = new GameManager();
+describe('Sink All Ships', () => {
+  test('Simulate Player Click on row 6, col 0, expect to update dom at 6, 0, with sunk', () => {
+    const evt1 = {
+      target: {
+        dataset: {
+          row: 7,
+          col: 0,
+          board: 'cpu',
+        },
       },
-    },
-  };
+    };
 
-  const evt1 = {
-    target: {
-      dataset: {
-        row: 7,
-        col: 0,
-        board: 'cpu',
+    gm1.squareClicked(evt1);
+    gm1.gameState = GameManager.GameState.playerTurn;
+
+    const evt2 = {
+      target: {
+        dataset: {
+          row: 6,
+          col: 0,
+          board: 'cpu',
+        },
       },
-    },
-  };
+    };
 
-  gm.squareClicked(evt1);
-  gm.squareClicked(evt2);
-  expect(gm.sendPlayerMoveToDom).toBeCalledWith(
-    6,
-    0,
-    GameBoard.attackStatus.sunk
-  );
+    gm1.squareClicked(evt2);
+
+    expect(gm1.sendPlayerMoveToDom).toBeCalledWith(
+      6,
+      0,
+      GameBoard.attackStatus.sunk
+    );
+  });
 });

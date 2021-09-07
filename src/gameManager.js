@@ -75,15 +75,41 @@ export default class GameManager {
       selection.col
     );
 
-    // if it's a valid selection, send info to update the dom
-    this._gameState = GameManager.GameState.transition;
+    if (selectionStatus !== GameBoard.attackStatus.invalid) {
+      // if it's a valid selection, send info to update the dom
+      this._gameState = GameManager.GameState.transition;
+      this.sendPlayerMoveToDom(selection.row, selection.col, selectionStatus);
+      this._gameState = GameManager.GameState.cpuTurn;
 
-    // TODO: NEED an update board function
-    this._battleshipDom.setCpuBoard(this._cpuBoard._boardState);
-    this._gameState = GameManager.GameState.playerTurn;
-
-    this.sendPlayerMoveToDom(selection.row, selection.col, selectionStatus);
+      this.doCpuTurn();
+    }
   }
 
-  sendPlayerMoveToDom(row, col, status) {}
+  sendPlayerMoveToDom(row, col, status) {
+    this._battleshipDom.receivePlayerMove(row, col, status);
+  }
+
+  doCpuTurn() {
+    let selectionStatus = GameBoard.attackStatus.invalid;
+    let row = -1;
+    let col = -1;
+    while (selectionStatus === GameBoard.attackStatus.invalid) {
+      row = Math.round(Math.random() * 7);
+      col = Math.round(Math.random() * 7);
+
+      selectionStatus = this._playerBoard.receiveAttack(row, col);
+    }
+
+    this._gameState = GameManager.GameState.transition;
+    this.sendCpuMoveToDom(row, col, selectionStatus);
+    this._gameState = GameManager.GameState.playerTurn;
+  }
+
+  sendCpuMoveToDom(row, col, status) {
+    this._battleshipDom.receiveCpuMove(row, col, status);
+  }
+
+  set gameState(value) {
+    this._gameState = value;
+  }
 }
