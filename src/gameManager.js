@@ -8,17 +8,40 @@ export default class GameManager {
     cpuTurn: 1,
     gameOver: 2,
     transition: 3,
+    preGame: 4,
   };
 
   constructor() {
-    this._gameState = GameManager.GameState.playerTurn;
+    this._gameState = GameManager.GameState.preGame;
     this.squareClicked = this.squareClicked.bind(this);
-
-    this._playerBoard = new GameBoard();
-    this._cpuBoard = new GameBoard();
+    this.receiveMessage = this.receiveMessage.bind(this);
 
     this._battleshipDom = new BattleshipDom();
     this._battleshipDom.setClickEventHandler(this.squareClicked);
+    this._battleshipDom.setMessageFunction(this.receiveMessage);
+
+    this._testMode = false;
+
+    this._init();
+  }
+
+  _init() {
+    this._playerBoard = new GameBoard();
+    this._cpuBoard = new GameBoard();
+    this._battleshipDom.setPlayerBoard(this._playerBoard._boardState);
+    this._battleshipDom.setCpuBoard(this._cpuBoard._boardState);
+  }
+
+  set testMode(value) {
+    this._testMode = value;
+  }
+
+  startGame() {
+    if (this._testMode) {
+      this.doTestSetup();
+    } else {
+      this.doSetup();
+    }
   }
 
   doTestSetup() {
@@ -45,9 +68,6 @@ export default class GameManager {
     this._cpuBoard.addShip(cpuCruiser, 7, 2, GameBoard.direction.up);
     this._cpuBoard.addShip(cpuBattleship, 7, 3, GameBoard.direction.up);
     this._cpuBoard.addShip(cpuCarrier, 7, 4, GameBoard.direction.up);
-
-    this._battleshipDom.setPlayerBoard(this._playerBoard._boardState);
-    this._battleshipDom.setCpuBoard(this._cpuBoard._boardState);
   }
 
   doSetup() {
@@ -84,15 +104,15 @@ export default class GameManager {
   }
 
   static _randomlyPlaceShips(ships, board) {
-    //Pick a random spot and direction, attempt to add ship
+    // Pick a random spot and direction, attempt to add ship
 
     for (let i = 0; i < ships.length; i++) {
       let validPlacement = false;
 
       while (!validPlacement) {
-        let row = Math.round(Math.random() * 7);
-        let col = Math.round(Math.random() * 7);
-        let dir = Math.round(Math.random() * 3);
+        const row = Math.round(Math.random() * 7);
+        const col = Math.round(Math.random() * 7);
+        const dir = Math.round(Math.random() * 3);
 
         validPlacement = board.addShip(ships[i], row, col, dir);
       }
@@ -173,6 +193,31 @@ export default class GameManager {
   doGameOver() {
     this._gameState = GameManager.GameState.gameOver;
     this._battleshipDom.receiveGameOver();
+  }
+
+  static GameMessages = {
+    StartGame: 0,
+  };
+
+  receiveMessage(msg) {
+    switch (msg) {
+      case GameManager.GameMessages.StartGame: {
+        this._handleGameStartMessage();
+
+        break;
+      }
+      default:
+        break;
+    }
+  }
+
+  _handleGameStartMessage() {
+    if (this._gameState !== GameManager.GameState.preGame) {
+      return;
+    } else {
+      this._gameState = GameManager.GameState.playerTurn;
+      this.startGame();
+    }
   }
 
   // This is for tests to be able to set gamestate and run properly

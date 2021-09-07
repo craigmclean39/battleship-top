@@ -30,7 +30,7 @@
     "prettier": "^2.3.2"
   },
   "scripts": {
-    "test": "jest",
+    "test": "jest --watch",
     "watch": "webpack --watch",
     "build": "webpack"
   },

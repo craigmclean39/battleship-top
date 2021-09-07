@@ -1,8 +1,11 @@
 import DomHelper from './domHelper';
 import GameBoard from './gameBoard';
+import GameManager from './gameManager';
 
 export default class BattleshipDom {
   constructor() {
+    this._startButtonPressed = this._startButtonPressed.bind(this);
+
     this._body = document.querySelector('body');
 
     this._tempMessages = DomHelper.createElement('div', 'temp-messages');
@@ -11,11 +14,18 @@ export default class BattleshipDom {
     this._playerBoard = DomHelper.createElement('div', 'battleship-grid');
     this._cpuBoard = DomHelper.createElement('div', 'battleship-grid');
 
+    this._startButton = DomHelper.createElement('button', 'start-button');
+    this._startButton.innerText = 'Start';
+    this._startButton.addEventListener('click', this._startButtonPressed);
+
     this._body.appendChild(this._tempMessages);
     this._body.appendChild(this._playerBoard);
     this._body.appendChild(this._cpuBoard);
+    this._body.appendChild(this._startButton);
 
     BattleshipDom.createBoard(this._playerBoard);
+
+    this._sendMessage = null;
   }
 
   setPlayerBoard(boardState) {
@@ -30,6 +40,14 @@ export default class BattleshipDom {
     this._clickCallback = callback;
     this._playerBoard.addEventListener('click', callback);
     this._cpuBoard.addEventListener('click', callback);
+  }
+
+  setMessageFunction(fn) {
+    this._sendMessage = fn;
+  }
+
+  _startButtonPressed(e) {
+    this._sendMessage(GameManager.GameMessages.StartGame);
   }
 
   static createBoard(board) {
