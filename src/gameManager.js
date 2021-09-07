@@ -1,18 +1,11 @@
 import BattleshipDom from './battleshipDom';
 import GameBoard from './gameBoard';
 import Ship from './ship';
+import { GameState, GameMessages, Direction, AttackStatus } from './messages';
 
 export default class GameManager {
-  static GameState = {
-    playerTurn: 0,
-    cpuTurn: 1,
-    gameOver: 2,
-    transition: 3,
-    preGame: 4,
-  };
-
   constructor() {
-    this._gameState = GameManager.GameState.preGame;
+    this._gameState = GameState.preGame;
     this.squareClicked = this.squareClicked.bind(this);
     this.receiveMessage = this.receiveMessage.bind(this);
 
@@ -57,17 +50,17 @@ export default class GameManager {
     const cpuBattleship = new Ship(4);
     const cpuCarrier = new Ship(5);
 
-    this._playerBoard.addShip(playerDestroyer, 0, 0, GameBoard.direction.down);
-    this._playerBoard.addShip(playerSubmarine, 0, 1, GameBoard.direction.down);
-    this._playerBoard.addShip(playerCruiser, 0, 2, GameBoard.direction.down);
-    this._playerBoard.addShip(playerBattleship, 0, 3, GameBoard.direction.down);
-    this._playerBoard.addShip(playerCarrier, 0, 4, GameBoard.direction.down);
+    this._playerBoard.addShip(playerDestroyer, 0, 0, Direction.down);
+    this._playerBoard.addShip(playerSubmarine, 0, 1, Direction.down);
+    this._playerBoard.addShip(playerCruiser, 0, 2, Direction.down);
+    this._playerBoard.addShip(playerBattleship, 0, 3, Direction.down);
+    this._playerBoard.addShip(playerCarrier, 0, 4, Direction.down);
 
-    this._cpuBoard.addShip(cpuDestroyer, 7, 0, GameBoard.direction.up);
-    this._cpuBoard.addShip(cpuSubmarine, 7, 1, GameBoard.direction.up);
-    this._cpuBoard.addShip(cpuCruiser, 7, 2, GameBoard.direction.up);
-    this._cpuBoard.addShip(cpuBattleship, 7, 3, GameBoard.direction.up);
-    this._cpuBoard.addShip(cpuCarrier, 7, 4, GameBoard.direction.up);
+    this._cpuBoard.addShip(cpuDestroyer, 7, 0, Direction.up);
+    this._cpuBoard.addShip(cpuSubmarine, 7, 1, Direction.up);
+    this._cpuBoard.addShip(cpuCruiser, 7, 2, Direction.up);
+    this._cpuBoard.addShip(cpuBattleship, 7, 3, Direction.up);
+    this._cpuBoard.addShip(cpuCarrier, 7, 4, Direction.up);
   }
 
   doSetup() {
@@ -131,7 +124,7 @@ export default class GameManager {
 
   squareClicked(e) {
     // The Player has clicked a square
-    if (this._gameState === GameManager.GameState.playerTurn) {
+    if (this._gameState === GameState.playerTurn) {
       if (e.target.dataset.board === 'cpu') {
         this.playerSelection({
           row: Number(e.target.dataset.row),
@@ -147,15 +140,15 @@ export default class GameManager {
       selection.col
     );
 
-    if (selectionStatus !== GameBoard.attackStatus.invalid) {
+    if (selectionStatus !== AttackStatus.invalid) {
       // if it's a valid selection, send info to update the dom
-      this._gameState = GameManager.GameState.transition;
+      this._gameState = GameState.transition;
       this.sendPlayerMoveToDom(selection.row, selection.col, selectionStatus);
 
       if (this.isGameOver()) {
         this.doGameOver();
       } else {
-        this._gameState = GameManager.GameState.cpuTurn;
+        this._gameState = GameState.cpuTurn;
         this.doCpuTurn();
       }
     }
@@ -166,23 +159,23 @@ export default class GameManager {
   }
 
   doCpuTurn() {
-    let selectionStatus = GameBoard.attackStatus.invalid;
+    let selectionStatus = AttackStatus.invalid;
     let row = -1;
     let col = -1;
-    while (selectionStatus === GameBoard.attackStatus.invalid) {
+    while (selectionStatus === AttackStatus.invalid) {
       row = Math.round(Math.random() * 7);
       col = Math.round(Math.random() * 7);
 
       selectionStatus = this._playerBoard.receiveAttack(row, col);
     }
 
-    this._gameState = GameManager.GameState.transition;
+    this._gameState = GameState.transition;
     this.sendCpuMoveToDom(row, col, selectionStatus);
 
     if (this.isGameOver()) {
       this.doGameOver();
     } else {
-      this._gameState = GameManager.GameState.playerTurn;
+      this._gameState = GameState.playerTurn;
     }
   }
 
@@ -191,17 +184,13 @@ export default class GameManager {
   }
 
   doGameOver() {
-    this._gameState = GameManager.GameState.gameOver;
+    this._gameState = GameState.gameOver;
     this._battleshipDom.receiveGameOver();
   }
 
-  static GameMessages = {
-    StartGame: 0,
-  };
-
   receiveMessage(msg) {
     switch (msg) {
-      case GameManager.GameMessages.StartGame: {
+      case GameMessages.StartGame: {
         this._handleGameStartMessage();
 
         break;
@@ -212,12 +201,11 @@ export default class GameManager {
   }
 
   _handleGameStartMessage() {
-    if (this._gameState !== GameManager.GameState.preGame) {
+    if (this._gameState !== GameState.preGame) {
       return;
-    } else {
-      this._gameState = GameManager.GameState.playerTurn;
-      this.startGame();
     }
+    this._gameState = GameState.playerTurn;
+    this.startGame();
   }
 
   // This is for tests to be able to set gamestate and run properly

@@ -1,6 +1,5 @@
 import DomHelper from './domHelper';
-import GameBoard from './gameBoard';
-import GameManager from './gameManager';
+import { GameMessages, BoardSpaceStatus, AttackStatus } from './messages';
 
 export default class BattleshipDom {
   constructor() {
@@ -46,8 +45,8 @@ export default class BattleshipDom {
     this._sendMessage = fn;
   }
 
-  _startButtonPressed(e) {
-    this._sendMessage(GameManager.GameMessages.StartGame);
+  _startButtonPressed() {
+    this._sendMessage(GameMessages.StartGame);
   }
 
   static createBoard(board) {
@@ -75,15 +74,15 @@ export default class BattleshipDom {
         square.dataset.board = player;
         square.classList.add('battleship-square');
         switch (boardState[i][j]) {
-          case GameBoard.boardSpaceStatus.empty: {
+          case BoardSpaceStatus.empty: {
             square.classList.add('battleship-square--empty');
             break;
           }
-          case GameBoard.boardSpaceStatus.emptyHit: {
+          case BoardSpaceStatus.emptyHit: {
             square.classList.add('battleship-square--empty-hit');
             break;
           }
-          case GameBoard.boardSpaceStatus.ship: {
+          case BoardSpaceStatus.ship: {
             if (!hidden) {
               square.classList.add('battleship-square--ship');
             } else {
@@ -91,7 +90,7 @@ export default class BattleshipDom {
             }
             break;
           }
-          case GameBoard.boardSpaceStatus.shipHit: {
+          case BoardSpaceStatus.shipHit: {
             square.classList.add('battleship-square--ship-hit');
             break;
           }
@@ -107,11 +106,11 @@ export default class BattleshipDom {
     BattleshipDom.receiveMove(row, col, status, this._cpuBoard);
 
     let message = '';
-    if (status === GameBoard.attackStatus.hit) {
+    if (status === AttackStatus.hit) {
       message = "It's a hit!";
-    } else if (status === GameBoard.attackStatus.sunk) {
+    } else if (status === AttackStatus.sunk) {
       message = 'You sunk a ship!';
-    } else if (status === GameBoard.attackStatus.sunk) {
+    } else if (status === AttackStatus.sunk) {
       message = "It's a miss";
     }
 
@@ -134,12 +133,12 @@ export default class BattleshipDom {
         squares[i].classList.add('battleship-square');
 
         if (
-          Number(status) === GameBoard.attackStatus.hit ||
-          Number(status) === GameBoard.attackStatus.sunk
+          Number(status) === AttackStatus.hit ||
+          Number(status) === AttackStatus.sunk
         ) {
           squares[i].classList.add('battleship-square--ship-hit');
         }
-        if (Number(status) === GameBoard.attackStatus.miss) {
+        if (Number(status) === AttackStatus.miss) {
           squares[i].classList.add('battleship-square--empty-hit');
         }
         break;

@@ -1,25 +1,6 @@
+import { BoardSpaceStatus, AttackStatus, Direction } from './messages';
+
 export default class GameBoard {
-  static boardSpaceStatus = {
-    empty: 0,
-    emptyHit: 1,
-    ship: 2,
-    shipHit: 3,
-  };
-
-  static direction = {
-    right: 0,
-    down: 1,
-    left: 2,
-    up: 3,
-  };
-
-  static attackStatus = {
-    hit: 0,
-    miss: 1,
-    sunk: 2,
-    invalid: 3,
-  };
-
   constructor() {
     this._boardState = [];
     this._ships = [];
@@ -30,15 +11,14 @@ export default class GameBoard {
     for (let i = 0; i < 8; i++) {
       const newRow = [];
       for (let j = 0; j < 8; j++) {
-        newRow.push(GameBoard.boardSpaceStatus.empty);
+        newRow.push(BoardSpaceStatus.empty);
       }
       this._boardState.push(newRow);
     }
   }
 
   _isSpaceEmpty(row, col) {
-    if (this._boardState[row][col] === GameBoard.boardSpaceStatus.empty)
-      return true;
+    if (this._boardState[row][col] === BoardSpaceStatus.empty) return true;
 
     return false;
   }
@@ -53,7 +33,7 @@ export default class GameBoard {
   clearBoard() {
     for (let i = 0; i < 8; i++) {
       for (let j = 0; j < 8; j++) {
-        this._boardState[i][j] = GameBoard.boardSpaceStatus.empty;
+        this._boardState[i][j] = BoardSpaceStatus.empty;
       }
     }
 
@@ -77,19 +57,19 @@ export default class GameBoard {
       coordsToCheck.push({ rowVar, colVar });
 
       switch (direction) {
-        case GameBoard.direction.right: {
+        case Direction.right: {
           colVar += 1;
           break;
         }
-        case GameBoard.direction.left: {
+        case Direction.left: {
           colVar -= 1;
           break;
         }
-        case GameBoard.direction.up: {
+        case Direction.up: {
           rowVar -= 1;
           break;
         }
-        case GameBoard.direction.down: {
+        case Direction.down: {
           rowVar += 1;
           break;
         }
@@ -122,7 +102,7 @@ export default class GameBoard {
 
     for (let i = 0; i < coordsToCheck.length; i++) {
       this._boardState[coordsToCheck[i].rowVar][coordsToCheck[i].colVar] =
-        GameBoard.boardSpaceStatus.ship;
+        BoardSpaceStatus.ship;
     }
 
     return true;
@@ -130,21 +110,21 @@ export default class GameBoard {
 
   receiveAttack(row, col) {
     if (!GameBoard._isSpaceInBounds(row, col)) {
-      return GameBoard.attackStatus.invalid;
+      return AttackStatus.invalid;
     }
     if (
-      this._boardState[row][col] === GameBoard.boardSpaceStatus.emptyHit ||
-      this._boardState[row][col] === GameBoard.boardSpaceStatus.shipHit
+      this._boardState[row][col] === BoardSpaceStatus.emptyHit ||
+      this._boardState[row][col] === BoardSpaceStatus.shipHit
     ) {
-      return GameBoard.attackStatus.invalid;
+      return AttackStatus.invalid;
     }
     // A valid attack must be to an empty space, or a ship in a position it hasn't been hit
-    if (this._boardState[row][col] === GameBoard.boardSpaceStatus.empty) {
-      this._boardState[row][col] = GameBoard.boardSpaceStatus.emptyHit;
-      return GameBoard.attackStatus.miss;
+    if (this._boardState[row][col] === BoardSpaceStatus.empty) {
+      this._boardState[row][col] = BoardSpaceStatus.emptyHit;
+      return AttackStatus.miss;
     }
-    if (this._boardState[row][col] === GameBoard.boardSpaceStatus.ship) {
-      this._boardState[row][col] = GameBoard.boardSpaceStatus.shipHit;
+    if (this._boardState[row][col] === BoardSpaceStatus.ship) {
+      this._boardState[row][col] = BoardSpaceStatus.shipHit;
 
       // route the hit to the proper ship
       let hitStatus;
@@ -157,26 +137,26 @@ export default class GameBoard {
 
         if (hitStatus.hit) {
           this._ships[i].ship.hit(hitStatus.position);
-          this._boardState[row][col] = GameBoard.boardSpaceStatus.shipHit;
+          this._boardState[row][col] = BoardSpaceStatus.shipHit;
           if (this._ships[i].ship.isSunk) {
-            return GameBoard.attackStatus.sunk;
+            return AttackStatus.sunk;
           }
 
           break;
         }
       }
 
-      return GameBoard.attackStatus.hit;
+      return AttackStatus.hit;
     }
 
-    return GameBoard.attackStatus.invalid;
+    return AttackStatus.invalid;
   }
 
   static _checkIfCoordinateIsInShipBounds(row, col, shipWithInfo) {
     let rowToCheck = shipWithInfo.row;
     let colToCheck = shipWithInfo.col;
     switch (shipWithInfo.direction) {
-      case GameBoard.direction.right: {
+      case Direction.right: {
         for (let i = 0; i < shipWithInfo.ship.length; i++) {
           if (rowToCheck === row && colToCheck === col) {
             return { hit: true, position: i };
@@ -185,7 +165,7 @@ export default class GameBoard {
         }
         break;
       }
-      case GameBoard.direction.left: {
+      case Direction.left: {
         for (let i = 0; i < shipWithInfo.ship.length; i++) {
           if (rowToCheck === row && colToCheck === col) {
             return { hit: true, position: i };
@@ -194,7 +174,7 @@ export default class GameBoard {
         }
         break;
       }
-      case GameBoard.direction.down: {
+      case Direction.down: {
         for (let i = 0; i < shipWithInfo.ship.length; i++) {
           if (rowToCheck === row && colToCheck === col) {
             return { hit: true, position: i };
@@ -203,7 +183,7 @@ export default class GameBoard {
         }
         break;
       }
-      case GameBoard.direction.up: {
+      case Direction.up: {
         for (let i = 0; i < shipWithInfo.ship.length; i++) {
           if (rowToCheck === row && colToCheck === col) {
             return { hit: true, position: i };
