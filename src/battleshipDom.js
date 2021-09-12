@@ -114,6 +114,10 @@ export default class BattleshipDom {
     this._playerBoard.addEventListener('mouseleave', callback);
   }
 
+  setRightClickEventHandler(callback) {
+    this._playerBoard.addEventListener('contextmenu', callback, false);
+  }
+
   setMessageFunction(fn) {
     this._sendMessage = fn;
   }

@@ -10,12 +10,14 @@ export default class GameManager {
     this.squareHover = this.squareHover.bind(this);
     this.receiveMessage = this.receiveMessage.bind(this);
     this.squareLeave = this.squareLeave.bind(this);
+    this.rotateShip = this.rotateShip.bind(this);
 
     this._battleshipDom = new BattleshipDom();
     this._battleshipDom.setClickEventHandler(this.squareClicked);
     this._battleshipDom.setMessageFunction(this.receiveMessage);
     this._battleshipDom.setHoverEventHandler(this.squareHover);
     this._battleshipDom.setMouseLeaveEventHandler(this.squareLeave);
+    this._battleshipDom.setRightClickEventHandler(this.rotateShip);
 
     this._testMode = false;
 
@@ -216,6 +218,21 @@ export default class GameManager {
     if (this._gameState === GameState.placingShips) {
       this._battleshipDom.unhighlightSquares();
     }
+  }
+
+  rotateShip(e) {
+    e.preventDefault();
+
+    if (this.placementDirection !== Direction.up) {
+      this.placementDirection += 1;
+    } else {
+      this.placementDirection = Direction.right;
+    }
+
+    this.squareLeave();
+    this.squareHover(e);
+
+    return false;
   }
 
   playerSelection(selection) {
