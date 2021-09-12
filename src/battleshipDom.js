@@ -242,7 +242,7 @@ export default class BattleshipDom {
     this._tempMessages.innerText = 'Game Over';
   }
 
-  highlightSquares(squaresToHighlight) {
+  highlightSquares(squaresToHighlight, valid) {
     if (squaresToHighlight !== undefined) {
       const squares = this._playerBoard.querySelectorAll('.battleship-square');
       for (let i = 0; i < squares.length; i++) {
@@ -252,7 +252,13 @@ export default class BattleshipDom {
             Number(squares[i].dataset.col) === squaresToHighlight[j].colVar
           ) {
             // highlight
-            squares[i].classList.add('battleship-square--place-highlight');
+            if (valid) {
+              squares[i].classList.add('battleship-square--place-highlight');
+            } else {
+              squares[i].classList.add(
+                'battleship-square--place-highlight-invalid'
+              );
+            }
           }
         }
       }
@@ -263,6 +269,7 @@ export default class BattleshipDom {
     const squares = this._playerBoard.querySelectorAll('.battleship-square');
     for (let i = 0; i < squares.length; i++) {
       squares[i].classList.remove('battleship-square--place-highlight');
+      squares[i].classList.remove('battleship-square--place-highlight-invalid');
     }
   }
 }

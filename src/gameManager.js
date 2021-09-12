@@ -206,9 +206,15 @@ export default class GameManager {
             this.placementDirection
           );
 
-          this._battleshipDom.highlightSquares(squaresToHighlight);
+          this._battleshipDom.highlightSquares(squaresToHighlight, true);
         } else {
-          this._battleshipDom.highlightSquares(undefined);
+          const squaresToHighlight = GameBoard.getCoordsToCheck(
+            this._playerShips[this.placeShipIndex],
+            row,
+            col,
+            this.placementDirection
+          );
+          this._battleshipDom.highlightSquares(squaresToHighlight, false);
         }
       }
     }
@@ -323,5 +329,13 @@ export default class GameManager {
   // This is for tests to be able to set gamestate and run properly
   set gameState(value) {
     this._gameState = value;
+  }
+
+  setGameState(value) {
+    if (value === GameState.placingShips) {
+    } else if (value === playerTurn) {
+    }
+
+    this.gameState = value;
   }
 }

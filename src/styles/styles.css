@@ -84,5 +84,11 @@ html {
 }
 
 .battleship-square--place-highlight {
-  background-color: purple;
+  background-color: #52b788;
+  border: solid 1px #307354;
+}
+
+.battleship-square--place-highlight-invalid {
+  background-color: #ef1a1e;
+  border: solid 1px #660708;
 }
