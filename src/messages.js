@@ -4,6 +4,7 @@ export const GameState = {
   gameOver: 2,
   transition: 3,
   preGame: 4,
+  placingShips: 5,
 };
 
 export const GameMessages = {

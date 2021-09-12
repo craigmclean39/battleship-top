@@ -42,14 +42,34 @@ export default class GameBoard {
     }
   }
 
-  // Public interface to add a ship, returns true if ship is places in valid position
-  // returns false if it's immpossible
-  addShip(ship, row, col, direction) {
+  isValidPlacement(ship, row, col, direction) {
     if (!GameBoard._isSpaceInBounds(row, col)) {
       return false;
     }
 
-    // Make an array of coords to check
+    const coordsToCheck = GameBoard.getCoordsToCheck(ship, row, col, direction);
+
+    for (let i = 0; i < coordsToCheck.length; i++) {
+      if (
+        !GameBoard._isSpaceInBounds(
+          coordsToCheck[i].rowVar,
+          coordsToCheck[i].colVar
+        )
+      ) {
+        return false;
+      }
+
+      if (
+        !this._isSpaceEmpty(coordsToCheck[i].rowVar, coordsToCheck[i].colVar)
+      ) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  static getCoordsToCheck(ship, row, col, direction) {
     const coordsToCheck = [];
     let rowVar = row;
     let colVar = col;
@@ -80,26 +100,20 @@ export default class GameBoard {
       }
     }
 
-    for (let i = 0; i < coordsToCheck.length; i++) {
-      if (
-        !GameBoard._isSpaceInBounds(
-          coordsToCheck[i].rowVar,
-          coordsToCheck[i].colVar
-        )
-      ) {
-        return false;
-      }
+    return coordsToCheck;
+  }
 
-      if (
-        !this._isSpaceEmpty(coordsToCheck[i].rowVar, coordsToCheck[i].colVar)
-      ) {
-        return false;
-      }
+  // Public interface to add a ship, returns true if ship is places in valid position
+  // returns false if it's immpossible
+  addShip(ship, row, col, direction) {
+    if (!this.isValidPlacement(ship, row, col, direction)) {
+      return false;
     }
 
     // If we make it this far all spaces are within bounds and empty, add the ship
     this._ships.push({ ship, row, col, direction });
 
+    const coordsToCheck = GameBoard.getCoordsToCheck(ship, row, col, direction);
     for (let i = 0; i < coordsToCheck.length; i++) {
       this._boardState[coordsToCheck[i].rowVar][coordsToCheck[i].colVar] =
         BoardSpaceStatus.ship;

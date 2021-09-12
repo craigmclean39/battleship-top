@@ -5,15 +5,36 @@ import { GameState, GameMessages, Direction, AttackStatus } from './messages';
 
 export default class GameManager {
   constructor() {
-    this._gameState = GameState.preGame;
+    this._gameState = GameState.placingShips;
     this.squareClicked = this.squareClicked.bind(this);
+    this.squareHover = this.squareHover.bind(this);
     this.receiveMessage = this.receiveMessage.bind(this);
+    this.squareLeave = this.squareLeave.bind(this);
 
     this._battleshipDom = new BattleshipDom();
     this._battleshipDom.setClickEventHandler(this.squareClicked);
     this._battleshipDom.setMessageFunction(this.receiveMessage);
+    this._battleshipDom.setHoverEventHandler(this.squareHover);
+    this._battleshipDom.setMouseLeaveEventHandler(this.squareLeave);
 
     this._testMode = false;
+
+    const playerDestroyer = new Ship(2);
+    const playerSubmarine = new Ship(3);
+    const playerCruiser = new Ship(3);
+    const playerBattleship = new Ship(4);
+    const playerCarrier = new Ship(5);
+
+    this._playerShips = [
+      playerDestroyer,
+      playerSubmarine,
+      playerCruiser,
+      playerBattleship,
+      playerCarrier,
+    ];
+
+    this.placeShipIndex = 0;
+    this.placementDirection = Direction.right;
 
     this._init();
   }
@@ -64,19 +85,13 @@ export default class GameManager {
   }
 
   doSetup() {
-    const playerDestroyer = new Ship(2);
-    const playerSubmarine = new Ship(3);
-    const playerCruiser = new Ship(3);
-    const playerBattleship = new Ship(4);
-    const playerCarrier = new Ship(5);
-
     const cpuDestroyer = new Ship(2);
     const cpuSubmarine = new Ship(3);
     const cpuCruiser = new Ship(3);
     const cpuBattleship = new Ship(4);
     const cpuCarrier = new Ship(5);
 
-    GameManager._randomlyPlaceShips(
+    /* GameManager._randomlyPlaceShips(
       [
         playerDestroyer,
         playerSubmarine,
@@ -85,7 +100,7 @@ export default class GameManager {
         playerCarrier,
       ],
       this._playerBoard
-    );
+    ); */
 
     GameManager._randomlyPlaceShips(
       [cpuDestroyer, cpuSubmarine, cpuCarrier, cpuCruiser, cpuBattleship],
@@ -131,6 +146,75 @@ export default class GameManager {
           col: Number(e.target.dataset.col),
         });
       }
+    } else if (this._gameState === GameState.placingShips) {
+      if (e.target.dataset.board === 'player') {
+        if (
+          this._playerBoard.isValidPlacement(
+            this._playerShips[this.placeShipIndex],
+            Number(e.target.dataset.row),
+            Number(e.target.dataset.col),
+            this.placementDirection
+          )
+        ) {
+          // console.log('Place Ship');
+          this._playerBoard.addShip(
+            this._playerShips[this.placeShipIndex],
+            Number(e.target.dataset.row),
+            Number(e.target.dataset.col),
+            this.placementDirection
+          );
+          this.placeShipIndex += 1;
+          this._battleshipDom.setPlayerBoard(this._playerBoard._boardState);
+
+          if (this.placeShipIndex >= this._playerShips.length) {
+            this.gameState = GameState.preGame;
+          }
+        }
+      }
+    }
+  }
+
+  squareHover(e) {
+    if (this._gameState === GameState.placingShips) {
+      if (
+        e.target.dataset.row !== this.cachedRow ||
+        e.target.dataset.col !== this.cachedCol
+      ) {
+        this._battleshipDom.unhighlightSquares();
+      }
+
+      this.cachedRow = e.target.dataset.row;
+      this.cachedCol = e.target.dataset.col;
+
+      if (e.target.classList.contains('battleship-square')) {
+        const row = Number(e.target.dataset.row);
+        const col = Number(e.target.dataset.col);
+        if (
+          this._playerBoard.isValidPlacement(
+            this._playerShips[this.placeShipIndex],
+            row,
+            col,
+            this.placementDirection
+          )
+        ) {
+          const squaresToHighlight = GameBoard.getCoordsToCheck(
+            this._playerShips[this.placeShipIndex],
+            row,
+            col,
+            this.placementDirection
+          );
+
+          this._battleshipDom.highlightSquares(squaresToHighlight);
+        } else {
+          this._battleshipDom.highlightSquares(undefined);
+        }
+      }
+    }
+  }
+
+  squareLeave() {
+    if (this._gameState === GameState.placingShips) {
+      this._battleshipDom.unhighlightSquares();
     }
   }
 
@@ -209,6 +293,10 @@ export default class GameManager {
 
   _handleGameStartMessage() {
     if (this._gameState !== GameState.preGame) {
+      this._init();
+      this._gameState = GameState.playerTurn;
+      this._battleshipDom.reset();
+      this.startGame();
       return;
     }
     this._gameState = GameState.playerTurn;

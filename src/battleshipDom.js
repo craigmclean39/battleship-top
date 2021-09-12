@@ -87,6 +87,11 @@ export default class BattleshipDom {
     this._sendMessage = null;
   }
 
+  reset() {
+    this._cpuMessage.innerText = '...';
+    this._playerMessage.innerText = '...';
+  }
+
   setPlayerBoard(boardState) {
     BattleshipDom.setBoard(this._playerBoard, boardState, 'player', false);
   }
@@ -99,6 +104,14 @@ export default class BattleshipDom {
     this._clickCallback = callback;
     this._playerBoard.addEventListener('click', callback);
     this._cpuBoard.addEventListener('click', callback);
+  }
+
+  setHoverEventHandler(callback) {
+    this._playerBoard.addEventListener('mouseover', callback);
+  }
+
+  setMouseLeaveEventHandler(callback) {
+    this._playerBoard.addEventListener('mouseleave', callback);
   }
 
   setMessageFunction(fn) {
@@ -223,5 +236,29 @@ export default class BattleshipDom {
 
   receiveGameOver() {
     this._tempMessages.innerText = 'Game Over';
+  }
+
+  highlightSquares(squaresToHighlight) {
+    if (squaresToHighlight !== undefined) {
+      const squares = this._playerBoard.querySelectorAll('.battleship-square');
+      for (let i = 0; i < squares.length; i++) {
+        for (let j = 0; j < squaresToHighlight.length; j++) {
+          if (
+            Number(squares[i].dataset.row) === squaresToHighlight[j].rowVar &&
+            Number(squares[i].dataset.col) === squaresToHighlight[j].colVar
+          ) {
+            // highlight
+            squares[i].classList.add('battleship-square--place-highlight');
+          }
+        }
+      }
+    }
+  }
+
+  unhighlightSquares() {
+    const squares = this._playerBoard.querySelectorAll('.battleship-square');
+    for (let i = 0; i < squares.length; i++) {
+      squares[i].classList.remove('battleship-square--place-highlight');
+    }
   }
 }

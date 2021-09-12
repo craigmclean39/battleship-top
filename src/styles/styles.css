@@ -82,3 +82,7 @@ html {
   background-color: #000814;
   border: solid 1px #000814;
 }
+
+.battleship-square--place-highlight {
+  background-color: purple;
+}
