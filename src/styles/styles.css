@@ -1,7 +1,29 @@
+:root {
+  --gridSize: 8;
+}
+
 html {
   font-size: 62.5%;
   box-sizing: border-box;
   min-height: 100%;
+}
+
+body {
+  min-height: 100%;
+  height: 95vh;
+  box-sizing: border-box;
+}
+
+.welcome-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: clamp(0, 100%, 800px);
+  max-width: 800px;
+  margin: auto;
+  height: 100%;
+  border: solid 1px red;
+  justify-content: center;
+  align-items: center;
 }
 
 .temp-messages {
@@ -23,6 +45,7 @@ html {
   min-width: 100%;
   display: flex;
   justify-content: space-around;
+  flex-direction: row;
 }
 
 .battleship-player-field {
@@ -33,11 +56,9 @@ html {
 }
 
 .battleship-player-field__battleship-grid {
-  width: 45vh;
-  height: 45vh;
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  grid-template-rows: repeat(8, 1fr);
+  grid-template-columns: repeat(var(--gridSize), 1fr);
+  grid-template-rows: repeat(var(--gridSize), 1fr);
   margin: 1rem;
 
   background: rgb(0, 80, 122);
@@ -49,6 +70,28 @@ html {
   );
 
   border: solid 0.2rem #001b29;
+}
+
+@media (max-width: 500px) {
+  .battleship-player-field__battleship-grid {
+    width: clamp(200px, 90vw, 380px);
+    height: clamp(200px, 90vw, 380px);
+  }
+
+  .battleship-playing-field {
+    flex-direction: column;
+  }
+}
+
+@media (min-width: 501px) {
+  .battleship-player-field__battleship-grid {
+    width: 45vw;
+    height: 45vw;
+  }
+
+  .battleship-playing-field {
+    flex-direction: row;
+  }
 }
 
 .battleship-player-field__title {
@@ -91,4 +134,8 @@ html {
 .battleship-square--place-highlight-invalid {
   background-color: #ef1a1e;
   border: solid 1px #660708;
+}
+
+.hidden {
+  display: none;
 }

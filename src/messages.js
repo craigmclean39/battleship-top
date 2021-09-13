@@ -5,12 +5,14 @@ export const GameState = {
   transition: 3,
   preGame: 4,
   placingShips: 5,
+  welcome: 6,
 };
 
 export const GameMessages = {
   StartGame: 0,
   RedrawCpuBoard: 1,
   ReDrawPlayerBoard: 2,
+  ResetGame: 3,
 };
 
 export const BoardSpaceStatus = {
@@ -34,3 +36,13 @@ export const AttackStatus = {
   sunk: 2,
   invalid: 3,
 };
+
+export const BattleshipGridSize = 8;
+
+export const PlayerShipNames = [
+  'Destroyer',
+  'Submarine',
+  'Cruiser',
+  'Battleship',
+  'Carrier',
+];

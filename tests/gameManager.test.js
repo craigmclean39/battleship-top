@@ -36,6 +36,7 @@ test('Simulate Player Click on 0,0, expect to update dom at 0, 0, with miss', ()
   const gm = new GameManager();
   gm.testMode = true;
   gm.receiveMessage(GameMessages.StartGame);
+  gm.gameState = GameState.preGame;
 
   const evt = {
     target: {
@@ -54,6 +55,7 @@ test('Simulate Player Click on row 7, col 0, expect to update dom at 7, 0, with 
   const gm = new GameManager();
   gm.testMode = true;
   gm.receiveMessage(GameMessages.StartGame);
+  gm.gameState = GameState.preGame;
 
   const evt = {
     target: {
@@ -71,6 +73,7 @@ test('Simulate Player Click on row 7, col 0, expect to update dom at 7, 0, with 
 const gm1 = new GameManager();
 gm1.testMode = true;
 gm1.receiveMessage(GameMessages.StartGame);
+gm1.gameState = GameState.preGame;
 describe('Sink All Ships', () => {
   test('Simulate Player Click on row 6, col 0, expect to update dom at 6, 0, with sunk', () => {
     const evt1 = {

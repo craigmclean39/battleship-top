@@ -1,4 +1,9 @@
-import { BoardSpaceStatus, AttackStatus, Direction } from './messages';
+import {
+  BoardSpaceStatus,
+  AttackStatus,
+  Direction,
+  BattleshipGridSize,
+} from './messages';
 
 export default class GameBoard {
   constructor() {
@@ -8,9 +13,9 @@ export default class GameBoard {
   }
 
   _createBoard() {
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < BattleshipGridSize; i++) {
       const newRow = [];
-      for (let j = 0; j < 8; j++) {
+      for (let j = 0; j < BattleshipGridSize; j++) {
         newRow.push(BoardSpaceStatus.empty);
       }
       this._boardState.push(newRow);
@@ -24,15 +29,20 @@ export default class GameBoard {
   }
 
   static _isSpaceInBounds(row, col) {
-    if (row >= 8 || row < 0 || col >= 8 || col < 0) {
+    if (
+      row >= BattleshipGridSize ||
+      row < 0 ||
+      col >= BattleshipGridSize ||
+      col < 0
+    ) {
       return false;
     }
     return true;
   }
 
   clearBoard() {
-    for (let i = 0; i < 8; i++) {
-      for (let j = 0; j < 8; j++) {
+    for (let i = 0; i < BattleshipGridSize; i++) {
+      for (let j = 0; j < BattleshipGridSize; j++) {
         this._boardState[i][j] = BoardSpaceStatus.empty;
       }
     }

@@ -1,11 +1,16 @@
 import BattleshipDom from './battleshipDom';
 import GameBoard from './gameBoard';
 import Ship from './ship';
-import { GameState, GameMessages, Direction, AttackStatus } from './messages';
+import {
+  GameState,
+  GameMessages,
+  Direction,
+  AttackStatus,
+  PlayerShipNames,
+} from './messages';
 
 export default class GameManager {
   constructor() {
-    this._gameState = GameState.placingShips;
     this.squareClicked = this.squareClicked.bind(this);
     this.squareHover = this.squareHover.bind(this);
     this.receiveMessage = this.receiveMessage.bind(this);
@@ -21,6 +26,21 @@ export default class GameManager {
 
     this._testMode = false;
 
+    //this._init();
+  }
+
+  _init() {
+    this.placeShipIndex = 0;
+    this.placementDirection = Direction.right;
+
+    this._playerBoard = new GameBoard();
+    this._cpuBoard = new GameBoard();
+
+    this._battleshipDom.reset();
+    this._battleshipDom.setPlayerBoard(this._playerBoard._boardState);
+    this._battleshipDom.setCpuBoard(this._cpuBoard._boardState);
+    this._battleshipDom.displayMessage('');
+
     const playerDestroyer = new Ship(2);
     const playerSubmarine = new Ship(3);
     const playerCruiser = new Ship(3);
@@ -35,17 +55,7 @@ export default class GameManager {
       playerCarrier,
     ];
 
-    this.placeShipIndex = 0;
-    this.placementDirection = Direction.right;
-
-    this._init();
-  }
-
-  _init() {
-    this._playerBoard = new GameBoard();
-    this._cpuBoard = new GameBoard();
-    this._battleshipDom.setPlayerBoard(this._playerBoard._boardState);
-    this._battleshipDom.setCpuBoard(this._cpuBoard._boardState);
+    this.gameState = GameState.placingShips;
   }
 
   set testMode(value) {
@@ -93,17 +103,6 @@ export default class GameManager {
     const cpuBattleship = new Ship(4);
     const cpuCarrier = new Ship(5);
 
-    /* GameManager._randomlyPlaceShips(
-      [
-        playerDestroyer,
-        playerSubmarine,
-        playerCruiser,
-        playerBattleship,
-        playerCarrier,
-      ],
-      this._playerBoard
-    ); */
-
     GameManager._randomlyPlaceShips(
       [cpuDestroyer, cpuSubmarine, cpuCarrier, cpuCruiser, cpuBattleship],
       this._cpuBoard
@@ -141,14 +140,14 @@ export default class GameManager {
 
   squareClicked(e) {
     // The Player has clicked a square
-    if (this._gameState === GameState.playerTurn) {
+    if (this.gameState === GameState.playerTurn) {
       if (e.target.dataset.board === 'cpu') {
         this.playerSelection({
           row: Number(e.target.dataset.row),
           col: Number(e.target.dataset.col),
         });
       }
-    } else if (this._gameState === GameState.placingShips) {
+    } else if (this.gameState === GameState.placingShips) {
       if (e.target.dataset.board === 'player') {
         if (
           this._playerBoard.isValidPlacement(
@@ -166,10 +165,16 @@ export default class GameManager {
             this.placementDirection
           );
           this.placeShipIndex += 1;
+
           this._battleshipDom.setPlayerBoard(this._playerBoard._boardState);
 
           if (this.placeShipIndex >= this._playerShips.length) {
             this.gameState = GameState.preGame;
+          } else {
+            const message = `Place your ${
+              PlayerShipNames[this.placeShipIndex]
+            }`;
+            this._battleshipDom.displayMessage(message);
           }
         }
       }
@@ -177,7 +182,7 @@ export default class GameManager {
   }
 
   squareHover(e) {
-    if (this._gameState === GameState.placingShips) {
+    if (this.gameState === GameState.placingShips) {
       if (
         e.target.dataset.row !== this.cachedRow ||
         e.target.dataset.col !== this.cachedCol
@@ -221,7 +226,7 @@ export default class GameManager {
   }
 
   squareLeave() {
-    if (this._gameState === GameState.placingShips) {
+    if (this.gameState === GameState.placingShips) {
       this._battleshipDom.unhighlightSquares();
     }
   }
@@ -249,13 +254,13 @@ export default class GameManager {
 
     if (selectionStatus !== AttackStatus.invalid) {
       // if it's a valid selection, send info to update the dom
-      this._gameState = GameState.transition;
+      this.gameState = GameState.transition;
       this.sendPlayerMoveToDom(selection.row, selection.col, selectionStatus);
 
       if (this.isGameOver()) {
         this.doGameOver();
       } else {
-        this._gameState = GameState.cpuTurn;
+        this.gameState = GameState.cpuTurn;
         this.doCpuTurn();
       }
     }
@@ -276,13 +281,13 @@ export default class GameManager {
       selectionStatus = this._playerBoard.receiveAttack(row, col);
     }
 
-    this._gameState = GameState.transition;
+    this.gameState = GameState.transition;
     this.sendCpuMoveToDom(row, col, selectionStatus);
 
     if (this.isGameOver()) {
       this.doGameOver();
     } else {
-      this._gameState = GameState.playerTurn;
+      this.gameState = GameState.playerTurn;
     }
   }
 
@@ -291,14 +296,14 @@ export default class GameManager {
   }
 
   doGameOver() {
-    this._gameState = GameState.gameOver;
-    this._battleshipDom.receiveGameOver();
+    this.gameState = GameState.gameOver;
+    this._battleshipDom.displayMessage('Game Over');
   }
 
   receiveMessage(msg) {
     switch (msg) {
-      case GameMessages.StartGame: {
-        this._handleGameStartMessage();
+      case GameMessages.ResetGame: {
+        this._handleResetMessage();
         break;
       }
       case GameMessages.ReDrawPlayerBoard: {
@@ -309,33 +314,46 @@ export default class GameManager {
         this._battleshipDom.setCpuBoard(this._cpuBoard._boardState);
         break;
       }
+      case GameMessages.StartGame: {
+        this._battleshipDom.setupForGameplay();
+        this._init();
+        break;
+      }
       default:
         break;
     }
   }
 
-  _handleGameStartMessage() {
-    if (this._gameState !== GameState.preGame) {
-      this._init();
-      this._gameState = GameState.playerTurn;
-      this._battleshipDom.reset();
-      this.startGame();
-      return;
-    }
-    this._gameState = GameState.playerTurn;
-    this.startGame();
+  _handleResetMessage() {
+    this._init();
   }
 
   // This is for tests to be able to set gamestate and run properly
   set gameState(value) {
+    console.log('Setting GameState = ' + value);
     this._gameState = value;
-  }
 
-  setGameState(value) {
-    if (value === GameState.placingShips) {
-    } else if (value === playerTurn) {
+    if (this.gameState === GameState.preGame) {
+      this.gameState = GameState.playerTurn;
+      this.startGame();
+      this._battleshipDom.displayMessage('Attack your opponent');
     }
 
-    this.gameState = value;
+    //SETUP BOARD VIEWS
+    if (this.gameState === GameState.placingShips) {
+      let message = `Place your ${PlayerShipNames[this.placeShipIndex]}`;
+      this._battleshipDom.displayMessage(message);
+      //just show player board
+      this._battleshipDom.hideCpuBoard();
+    } else if (this.gameState === GameState.playerTurn) {
+      //show both boards
+      this._battleshipDom.showCpuBoard();
+    } else if (this.gameState === GameState.transition) {
+      this._battleshipDom.displayMessage('');
+    }
+  }
+
+  get gameState() {
+    return this._gameState;
   }
 }

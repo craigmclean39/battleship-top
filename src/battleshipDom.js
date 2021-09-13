@@ -1,12 +1,52 @@
 import DomHelper from './domHelper';
-import { GameMessages, BoardSpaceStatus, AttackStatus } from './messages';
+import {
+  GameMessages,
+  BoardSpaceStatus,
+  AttackStatus,
+  BattleshipGridSize,
+} from './messages';
 
 export default class BattleshipDom {
   constructor() {
-    this._startButtonPressed = this._startButtonPressed.bind(this);
+    this._sendMessage = null;
+    this._resetButtonPressed = this._resetButtonPressed.bind(this);
+    this.startGame = this.startGame.bind(this);
 
     this._body = document.querySelector('body');
 
+    this.createElementsForGameplay();
+    this.createElementsForWelcome();
+  }
+
+  createElementsForWelcome() {
+    this._welcomeWrapper = DomHelper.createElement('div', 'welcome-wrapper');
+    this._welcomeTitle = DomHelper.createElement(
+      'h1',
+      'welcome-wrapper__welcome-title'
+    );
+    this._welcomeMessage = DomHelper.createElement(
+      'p',
+      'welcome-wrapper__welcome-message'
+    );
+    this._welcomeButton = DomHelper.createElement(
+      'button',
+      'welcome-wrapper__welcome-button'
+    );
+
+    this._welcomeTitle.innerText = 'Welcome';
+    this._welcomeMessage.innerText = 'This is a message about the game';
+    this._welcomeButton.innerText = 'start game';
+
+    this._welcomeButton.addEventListener('click', this.startGame);
+
+    this._welcomeWrapper.appendChild(this._welcomeTitle);
+    this._welcomeWrapper.appendChild(this._welcomeMessage);
+    this._welcomeWrapper.appendChild(this._welcomeButton);
+    this._body.textContent = '';
+    this._body.appendChild(this._welcomeWrapper);
+  }
+
+  createElementsForGameplay() {
     this._title = DomHelper.createElement('div', 'battleship-title');
     this._titleContent = DomHelper.createElement(
       'h1',
@@ -70,26 +110,27 @@ export default class BattleshipDom {
     this._cpuField.appendChild(this._cpuBoard);
     this._cpuField.appendChild(this._cpuMessage);
 
-    this._startButton = DomHelper.createElement('button', 'start-button');
-    this._startButton.innerText = 'Start';
-    this._startButton.addEventListener('click', this._startButtonPressed);
+    this._resetButton = DomHelper.createElement('button', 'reset-button');
+    this._resetButton.innerText = 'Reset';
+    this._resetButton.addEventListener('click', this._resetButtonPressed);
 
-    this._playingField.appendChild(this._playerField);
     this._playingField.appendChild(this._cpuField);
+    this._playingField.appendChild(this._playerField);
+  }
 
+  setupForGameplay() {
+    this._body.textContent = '';
     this._body.appendChild(this._title);
-    this._body.appendChild(this._playingField);
     this._body.appendChild(this._tempMessages);
-    this._body.appendChild(this._startButton);
+    this._body.appendChild(this._playingField);
+    this._body.appendChild(this._resetButton);
 
     BattleshipDom.createBoard(this._playerBoard);
-
-    this._sendMessage = null;
   }
 
   reset() {
-    this._cpuMessage.innerText = '...';
-    this._playerMessage.innerText = '...';
+    this._cpuMessage.innerText = '';
+    this._playerMessage.innerText = '';
   }
 
   setPlayerBoard(boardState) {
@@ -97,7 +138,7 @@ export default class BattleshipDom {
   }
 
   setCpuBoard(boardState) {
-    BattleshipDom.setBoard(this._cpuBoard, boardState, 'cpu', true);
+    BattleshipDom.setBoard(this._cpuBoard, boardState, 'cpu', false);
   }
 
   setClickEventHandler(callback) {
@@ -122,13 +163,13 @@ export default class BattleshipDom {
     this._sendMessage = fn;
   }
 
-  _startButtonPressed() {
-    this._sendMessage(GameMessages.StartGame);
+  _resetButtonPressed() {
+    this._sendMessage(GameMessages.ResetGame);
   }
 
   static createBoard(board) {
-    for (let i = 0; i < 8; i++) {
-      for (let j = 0; j < 8; j++) {
+    for (let i = 0; i < BattleshipGridSize; i++) {
+      for (let j = 0; j < BattleshipGridSize; j++) {
         const square = DomHelper.createElement('div', [
           'battleship-square--empty',
           'battleship-square',
@@ -238,8 +279,8 @@ export default class BattleshipDom {
     }
   }
 
-  receiveGameOver() {
-    this._tempMessages.innerText = 'Game Over';
+  displayMessage(value) {
+    this._tempMessages.innerText = value;
   }
 
   highlightSquares(squaresToHighlight, valid) {
@@ -271,5 +312,17 @@ export default class BattleshipDom {
       squares[i].classList.remove('battleship-square--place-highlight');
       squares[i].classList.remove('battleship-square--place-highlight-invalid');
     }
+  }
+
+  hideCpuBoard() {
+    this._cpuField.classList.add('hidden');
+  }
+
+  showCpuBoard() {
+    this._cpuField.classList.remove('hidden');
+  }
+
+  startGame() {
+    this._sendMessage(GameMessages.StartGame);
   }
 }
