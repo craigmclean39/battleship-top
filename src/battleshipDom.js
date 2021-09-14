@@ -33,9 +33,10 @@ export default class BattleshipDom {
       'welcome-wrapper__welcome-button'
     );
 
-    this._welcomeTitle.innerText = 'Welcome';
-    this._welcomeMessage.innerText = 'This is a message about the game';
-    this._welcomeButton.innerText = 'start game';
+    this._welcomeTitle.innerText = 'BATTLESHIP';
+    this._welcomeMessage.innerText =
+      "Welcome to the game of Battleship. Place the 5 ships of your fleet on your board. Be the first to sink all 5 of your opponent's ships to win!";
+    this._welcomeButton.innerText = 'START';
 
     this._welcomeButton.addEventListener('click', this.startGame);
 
@@ -75,8 +76,8 @@ export default class BattleshipDom {
       'battleship-player-field__title'
     );
 
-    this._playerTitle.innerText = 'You';
-    this._cpuTitle.innerText = 'CPU';
+    this._playerTitle.innerText = 'YOUR WATERS';
+    this._cpuTitle.innerText = "OPPONENT'S WATERS";
 
     this._playerBoard = DomHelper.createElement(
       'div',
@@ -96,8 +97,8 @@ export default class BattleshipDom {
       'battleship-player-field__message'
     );
 
-    this._playerMessage.innerText = '...';
-    this._cpuMessage.innerText = '...';
+    this._playerMessage.innerText = ' ';
+    this._cpuMessage.innerText = ' ';
 
     this._tempMessages = DomHelper.createElement('div', 'temp-messages');
     this._tempMessages.innerText = '';
@@ -226,34 +227,19 @@ export default class BattleshipDom {
 
   receivePlayerMove(row, col, status) {
     BattleshipDom.receiveMove(row, col, status, this._cpuBoard);
-
-    let message = '';
-    if (status === AttackStatus.hit) {
-      message = "It's a hit!";
-    } else if (status === AttackStatus.sunk) {
-      message = 'You sunk a ship!';
-
+    if (status === AttackStatus.sunk) {
       this._sendMessage(GameMessages.RedrawCpuBoard);
-    } else if (status === AttackStatus.miss) {
-      message = "It's a miss.";
     }
 
-    this._cpuMessage.innerText = `You've attacked. ${message}`;
+    this.setCpuMessage(status);
   }
 
   receiveCpuMove(row, col, status) {
     BattleshipDom.receiveMove(row, col, status, this._playerBoard);
-    let message = '';
-    if (status === AttackStatus.hit) {
-      message = 'The CPU hit one of your ships!';
-    } else if (status === AttackStatus.sunk) {
-      message = 'The CPU sunk one of your ships!';
-      this._sendMessage(GameMessages.ReDrawPlayerBoard);
-    } else if (status === AttackStatus.miss) {
-      message = 'The CPU missed.';
+    if (status === AttackStatus.sunk) {
+      this._sendMessage(GameMessages.RedrawCpuBoard);
     }
-
-    this._playerMessage.innerText = `${message}`;
+    this.setPlayerMessage(status);
   }
 
   static receiveMove(row, col, status, board) {
@@ -277,6 +263,48 @@ export default class BattleshipDom {
         break;
       }
     }
+  }
+
+  setPlayerMessage(status) {
+    this._playerMessage.textContent = '';
+    this._playerMessage.classList.toggle('message');
+
+    let m1 = 'Your opponent ';
+    let m2 = '';
+    let m3 = '';
+    if (status === AttackStatus.hit) {
+      m2 = "<span class='hit-message'>hit</span>";
+      m3 = ' one of your ships';
+    } else if (status === AttackStatus.sunk) {
+      m2 = "<span class='sunk-message'>sunk</span>";
+      m3 = ' one of your ships';
+    } else if (status === AttackStatus.miss) {
+      m2 = "<span class='missed-message'>missed!</span>";
+      m3 = '';
+    }
+
+    this._playerMessage.innerHTML = `${m1}${m2}${m3}`;
+  }
+
+  setCpuMessage(status) {
+    this._cpuMessage.textContent = '';
+    this._cpuMessage.classList.toggle('message');
+
+    let m1 = 'You ';
+    let m2 = '';
+    let m3 = '';
+    if (status === AttackStatus.hit) {
+      m2 = "<span class='hit-message'>hit</span>";
+      m3 = ' an enemy ship!';
+    } else if (status === AttackStatus.sunk) {
+      m2 = "<span class='sunk-message'>sunk</span>";
+      m3 = ' an enemy ship!!!';
+    } else if (status === AttackStatus.miss) {
+      m2 = "<span class='missed-message'>missed.</span>";
+      m3 = '';
+    }
+
+    this._cpuMessage.innerHTML = `${m1}${m2}${m3}`;
   }
 
   displayMessage(value) {
