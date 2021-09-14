@@ -268,10 +268,11 @@ export default class BattleshipDom {
   setPlayerMessage(status) {
     this._playerMessage.textContent = '';
     this._playerMessage.classList.remove('message');
+    // Hack to force reflow
     this._playerMessage.offsetHeight;
     this._playerMessage.classList.add('message');
 
-    let m1 = 'Your opponent ';
+    const m1 = 'Your opponent ';
     let m2 = '';
     let m3 = '';
     if (status === AttackStatus.hit) {
@@ -291,10 +292,11 @@ export default class BattleshipDom {
   setCpuMessage(status) {
     this._cpuMessage.textContent = '';
     this._cpuMessage.classList.remove('message');
+    // Hack to force reflow
     this._cpuMessage.offsetHeight;
     this._cpuMessage.classList.add('message');
 
-    let m1 = 'You ';
+    const m1 = 'You ';
     let m2 = '';
     let m3 = '';
     if (status === AttackStatus.hit) {
@@ -356,5 +358,11 @@ export default class BattleshipDom {
 
   startGame() {
     this._sendMessage(GameMessages.StartGame);
+  }
+
+  makePlayerBoardSmall() {
+    this._playerBoard.classList.add(
+      'battleship-player-field__battleship-grid--mini'
+    );
   }
 }

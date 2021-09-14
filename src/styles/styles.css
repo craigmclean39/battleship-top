@@ -197,6 +197,12 @@ body {
 .missed-message {
   color: green;
 }
+@media (max-width: 500px) {
+  .battleship-player-field__battleship-grid--mini {
+    width: clamp(100px, 40vw, 200px);
+    height: clamp(100px, 40vw, 200px);
+  }
+}
 
 @keyframes fadeout {
   from {

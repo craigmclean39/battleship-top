@@ -332,9 +332,14 @@ export default class GameManager {
     this._gameState = value;
 
     if (this.gameState === GameState.preGame) {
-      this.gameState = GameState.playerTurn;
+      this.gameState = GameState.gameplayStart;
       this.startGame();
       this._battleshipDom.displayMessage('Attack your opponent');
+    }
+
+    if (this.gameState === GameState.gameplayStart) {
+      this._battleshipDom.makePlayerBoardSmall();
+      this.gameState = GameState.playerTurn;
     }
 
     // SETUP BOARD VIEWS

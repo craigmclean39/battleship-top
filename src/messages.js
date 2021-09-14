@@ -6,6 +6,7 @@ export const GameState = {
   preGame: 4,
   placingShips: 5,
   welcome: 6,
+  gameplayStart: 7,
 };
 
 export const GameMessages = {
