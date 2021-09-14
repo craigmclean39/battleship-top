@@ -25,8 +25,6 @@ export default class GameManager {
     this._battleshipDom.setRightClickEventHandler(this.rotateShip);
 
     this._testMode = false;
-
-    //this._init();
   }
 
   _init() {
@@ -330,7 +328,7 @@ export default class GameManager {
 
   // This is for tests to be able to set gamestate and run properly
   set gameState(value) {
-    console.log('Setting GameState = ' + value);
+    // console.log('Setting GameState = ' + value);
     this._gameState = value;
 
     if (this.gameState === GameState.preGame) {
@@ -339,14 +337,14 @@ export default class GameManager {
       this._battleshipDom.displayMessage('Attack your opponent');
     }
 
-    //SETUP BOARD VIEWS
+    // SETUP BOARD VIEWS
     if (this.gameState === GameState.placingShips) {
-      let message = `Place your ${PlayerShipNames[this.placeShipIndex]}`;
+      const message = `Place your ${PlayerShipNames[this.placeShipIndex]}`;
       this._battleshipDom.displayMessage(message);
-      //just show player board
+      // just show player board
       this._battleshipDom.hideCpuBoard();
     } else if (this.gameState === GameState.playerTurn) {
-      //show both boards
+      // show both boards
       this._battleshipDom.showCpuBoard();
     } else if (this.gameState === GameState.transition) {
       this._battleshipDom.displayMessage('');
