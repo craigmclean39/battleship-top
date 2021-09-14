@@ -267,7 +267,9 @@ export default class BattleshipDom {
 
   setPlayerMessage(status) {
     this._playerMessage.textContent = '';
-    this._playerMessage.classList.toggle('message');
+    this._playerMessage.classList.remove('message');
+    this._playerMessage.offsetHeight;
+    this._playerMessage.classList.add('message');
 
     let m1 = 'Your opponent ';
     let m2 = '';
@@ -288,7 +290,9 @@ export default class BattleshipDom {
 
   setCpuMessage(status) {
     this._cpuMessage.textContent = '';
-    this._cpuMessage.classList.toggle('message');
+    this._cpuMessage.classList.remove('message');
+    this._cpuMessage.offsetHeight;
+    this._cpuMessage.classList.add('message');
 
     let m1 = 'You ';
     let m2 = '';
