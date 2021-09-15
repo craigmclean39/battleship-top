@@ -1,5 +1,6 @@
 :root {
   --gridSize: 8;
+  --fleetButtonSize: 10px;
 }
 
 /* press-start-2p-regular - latin */
@@ -43,7 +44,6 @@ body {
   max-width: 800px;
   margin: auto;
   height: 100%;
-  border: solid 1px red;
   justify-content: center;
   align-items: center;
 }
@@ -61,18 +61,27 @@ body {
 
 .welcome-wrapper__welcome-button {
   font-family: 'Press Start 2P';
+  padding: 1rem;
+  border: solid 5px black;
+  background-color: #c5c5c5;
 }
 
 .message-flex {
+  box-sizing: border-box;
   display: flex;
   width: 100%;
   justify-content: center;
-  margin: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .message-flex__text {
-  margin: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
   font-size: 1.4rem;
+  min-height: 2rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
   animation-duration: 2s;
   animation-name: pulse;
   animation-timing-function: ease-in-out;
@@ -126,9 +135,12 @@ body {
   font-size: 1.4rem;
 }
 .battleship-player-field__message {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   margin-bottom: 1rem;
   opacity: 0;
+  min-height: 4rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 .battleship-square {
@@ -180,40 +192,43 @@ body {
 }
 
 .hit-message {
-  color: red;
+  color: #ae2012;
 }
 
 .sunk-message {
-  color: crimson;
+  color: #9b2226;
 }
 
 .missed-message {
-  color: green;
+  color: #48ad8b;
 }
 
 .placement-wrapper {
-  border: solid 1px green;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .placement-wrapper__rotate-button {
-  border: solid 1px red;
+  font-family: 'Press Start 2P';
+  padding: 1rem;
+  border: solid 5px black;
+  background-color: #c5c5c5;
 }
 
 .placement-wrapper__rotate-grid {
-  border: solid 1px green;
-  width: 10vw;
-  height: 10vw;
+  width: max(10vw, 10vh);
+  height: max(10vw, 10vh);
 
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(5, 1fr);
+  background-color: #94d2bd;
+  grid-gap: 1px;
 }
 
 .placement-wrapper__ship-proxy {
-  border: solid 1px blue;
+  background-color: #bb3e03;
 }
 
 .reset-flex {
@@ -231,6 +246,25 @@ body {
 
 .reset-flex__button:hover {
   background-color: grey;
+}
+
+.fleet-button-wrapper {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  width: 100%;
+  height: 20%;
+}
+
+.fleet-button-wrapper__button {
+  background-color: red;
+  width: var(--fleetButtonSize);
+  height: var(--fleetButtonSize);
+  border: none;
+  margin: 0.1rem;
+}
+
+.fleet-button__highlight {
+  background-color: maroon;
 }
 
 @media (max-width: 500px) {

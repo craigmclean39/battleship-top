@@ -17,6 +17,7 @@ export default class GameManager {
     this.squareLeave = this.squareLeave.bind(this);
     this.rotateShip = this.rotateShip.bind(this);
     this.doCpuTurn = this.doCpuTurn.bind(this);
+    this.setPlacementIndex = this.setPlacementIndex.bind(this);
 
     const playerDestroyer = new Ship(2);
     const playerSubmarine = new Ship(3);
@@ -32,19 +33,31 @@ export default class GameManager {
       playerCarrier,
     ];
 
-    this._battleshipDom = new BattleshipDom(5);
+    let domFleet = this._playerShips.map(GameManager.shipsToDomFleet);
+
+    this._battleshipDom = new BattleshipDom(domFleet);
     this._battleshipDom.setClickEventHandler(this.squareClicked);
     this._battleshipDom.setMessageFunction(this.receiveMessage);
     this._battleshipDom.setHoverEventHandler(this.squareHover);
     this._battleshipDom.setMouseLeaveEventHandler(this.squareLeave);
     this._battleshipDom.setRightClickEventHandler(this.rotateShip);
+    this._battleshipDom.setShipSelect(this.setPlacementIndex);
 
     this._testMode = false;
+    this._playerWon = false;
+  }
+
+  static shipsToDomFleet(elmt, i) {
+    return { length: elmt.length, name: PlayerShipNames[i] };
   }
 
   _init() {
     this.placeShipIndex = 0;
     this.placementDirection = Direction.right;
+    this.placementComplete = new Array(this._playerShips.length);
+    for (let i = 0; i < this.placementComplete.length; i++) {
+      this.placementComplete[i] = false;
+    }
 
     this._playerBoard = new GameBoard();
     this._cpuBoard = new GameBoard();
@@ -131,9 +144,11 @@ export default class GameManager {
 
   isGameOver() {
     if (this._playerBoard.areAllShipsSunk()) {
+      this._playerWon = false;
       return true;
     }
     if (this._cpuBoard.areAllShipsSunk()) {
+      this._playerWon = true;
       return true;
     }
     return false;
@@ -165,23 +180,36 @@ export default class GameManager {
             Number(e.target.dataset.col),
             this.placementDirection
           );
-          this.placeShipIndex += 1;
+
+          this.placementComplete[this.placeShipIndex] = true;
+          this._battleshipDom.removeFleetButton(this.placeShipIndex);
+
+          let allTrue = true;
+          for (let i = 0; i < this.placementComplete.length; i++) {
+            if (this.placementComplete[i] === false) {
+              this.placeShipIndex = i;
+              allTrue = false;
+              break;
+            }
+          }
 
           this._battleshipDom.setPlayerBoard(this._playerBoard._boardState);
 
-          if (this.placeShipIndex >= this._playerShips.length) {
+          if (allTrue) {
             this.gameState = GameState.preGame;
           } else {
-            const message = `Place your ${
-              PlayerShipNames[this.placeShipIndex]
-            }`;
-            this._battleshipDom.displayMessage(message);
-
-            this.updateDomShipProxy();
+            this.updateAfterShipSelection();
           }
         }
       }
     }
+  }
+
+  updateAfterShipSelection() {
+    const message = `Place your ${PlayerShipNames[this.placeShipIndex]}`;
+    this._battleshipDom.displayMessage(message);
+    this._battleshipDom.highlightFleetButton(this.placeShipIndex);
+    this.updateDomShipProxy();
   }
 
   updateDomShipProxy() {
@@ -276,7 +304,7 @@ export default class GameManager {
         this.doGameOver();
       } else {
         this.gameState = GameState.cpuTurn;
-        setTimeout(this.doCpuTurn, 500);
+        setTimeout(this.doCpuTurn, 250);
         //this.doCpuTurn();
       }
     }
@@ -313,7 +341,13 @@ export default class GameManager {
 
   doGameOver() {
     this.gameState = GameState.gameOver;
-    this._battleshipDom.displayMessage('Game Over');
+    let winLoss = '';
+    if (this._playerWon) {
+      winLoss = 'You Won!';
+    } else {
+      winLoss = 'You Lost...';
+    }
+    this._battleshipDom.displayMessage(`Game Over ${winLoss}`);
   }
 
   receiveMessage(msg) {
@@ -350,6 +384,15 @@ export default class GameManager {
   _handleResetMessage() {
     this.gameState = GameState.reset;
     this._init();
+    this._battleshipDom.removeAllFleetButtons();
+    this._battleshipDom.addFleetButtons();
+  }
+
+  setPlacementIndex(newIndex) {
+    if (this.placementComplete[newIndex] === false) {
+      this.placeShipIndex = newIndex;
+      this.updateAfterShipSelection();
+    }
   }
 
   // This is for tests to be able to set gamestate and run properly

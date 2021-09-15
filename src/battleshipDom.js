@@ -8,11 +8,13 @@ import {
 } from './messages';
 
 export default class BattleshipDom {
-  constructor() {
+  constructor(domFleet) {
+    this._domFleet = domFleet;
     this._sendMessage = null;
     this._resetButtonPressed = this._resetButtonPressed.bind(this);
     this.startGame = this.startGame.bind(this);
     this.sendRotateMsg = this.sendRotateMsg.bind(this);
+    this.selectShipForPlacement = this.selectShipForPlacement.bind(this);
 
     this._body = document.querySelector('body');
 
@@ -72,9 +74,77 @@ export default class BattleshipDom {
       'placement-wrapper__ship-proxy'
     );
 
+    this._fleetButtonWrapper = DomHelper.createElement(
+      'div',
+      'fleet-button-wrapper'
+    );
+
+    this._fleetButtonWrapper.addEventListener(
+      'click',
+      this.selectShipForPlacement
+    );
+
+    this.addFleetButtons();
+
     this._placementWrapper.appendChild(this._rotateButton);
     this._placementWrapper.appendChild(this._rotateGrid);
+    this._placementWrapper.appendChild(this._fleetButtonWrapper);
     this._rotateGrid.appendChild(this._shipProxy);
+  }
+
+  setShipSelect(callback) {
+    this._selectShip = callback;
+  }
+
+  selectShipForPlacement(e) {
+    console.log(e.target.dataset.index);
+    this._selectShip(Number(e.target.dataset.index));
+  }
+
+  highlightFleetButton(index) {
+    for (let i = 0; i < this._fleetButtonWrapper.childNodes.length; i++) {
+      if (
+        Number(this._fleetButtonWrapper.childNodes[i].dataset.index) === index
+      ) {
+        this._fleetButtonWrapper.childNodes[i].classList.add(
+          'fleet-button__highlight'
+        );
+      } else {
+        this._fleetButtonWrapper.childNodes[i].classList.remove(
+          'fleet-button__highlight'
+        );
+      }
+    }
+  }
+
+  addFleetButtons() {
+    for (let i = 0; i < this._domFleet.length; i++) {
+      const btn = DomHelper.createElement(
+        'button',
+        'fleet-button-wrapper__button'
+      );
+      // doesn't work btn.alt = this._domFleet[i].name;
+      btn.style.width = `calc(var(--fleetButtonSize) * ${this._domFleet[i].length})`;
+      btn.style.gridColumn = `span ${this._domFleet[i].length}`;
+      btn.dataset.index = i;
+      this._fleetButtonWrapper.appendChild(btn);
+    }
+  }
+
+  removeAllFleetButtons() {
+    this._fleetButtonWrapper.textContent = '';
+  }
+
+  removeFleetButton(index) {
+    for (let i = 0; i < this._fleetButtonWrapper.childNodes.length; i++) {
+      if (
+        Number(this._fleetButtonWrapper.childNodes[i].dataset.index) === index
+      ) {
+        this._fleetButtonWrapper.removeChild(
+          this._fleetButtonWrapper.childNodes[i]
+        );
+      }
+    }
   }
 
   createElementsForGameplay() {
