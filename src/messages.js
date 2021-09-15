@@ -7,6 +7,7 @@ export const GameState = {
   placingShips: 5,
   welcome: 6,
   gameplayStart: 7,
+  reset: 8,
 };
 
 export const GameMessages = {
@@ -14,6 +15,7 @@ export const GameMessages = {
   RedrawCpuBoard: 1,
   ReDrawPlayerBoard: 2,
   ResetGame: 3,
+  Rotate: 4,
 };
 
 export const BoardSpaceStatus = {

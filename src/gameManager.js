@@ -16,8 +16,23 @@ export default class GameManager {
     this.receiveMessage = this.receiveMessage.bind(this);
     this.squareLeave = this.squareLeave.bind(this);
     this.rotateShip = this.rotateShip.bind(this);
+    this.doCpuTurn = this.doCpuTurn.bind(this);
 
-    this._battleshipDom = new BattleshipDom();
+    const playerDestroyer = new Ship(2);
+    const playerSubmarine = new Ship(3);
+    const playerCruiser = new Ship(3);
+    const playerBattleship = new Ship(4);
+    const playerCarrier = new Ship(5);
+
+    this._playerShips = [
+      playerDestroyer,
+      playerSubmarine,
+      playerCruiser,
+      playerBattleship,
+      playerCarrier,
+    ];
+
+    this._battleshipDom = new BattleshipDom(5);
     this._battleshipDom.setClickEventHandler(this.squareClicked);
     this._battleshipDom.setMessageFunction(this.receiveMessage);
     this._battleshipDom.setHoverEventHandler(this.squareHover);
@@ -39,19 +54,7 @@ export default class GameManager {
     this._battleshipDom.setCpuBoard(this._cpuBoard._boardState);
     this._battleshipDom.displayMessage('');
 
-    const playerDestroyer = new Ship(2);
-    const playerSubmarine = new Ship(3);
-    const playerCruiser = new Ship(3);
-    const playerBattleship = new Ship(4);
-    const playerCarrier = new Ship(5);
-
-    this._playerShips = [
-      playerDestroyer,
-      playerSubmarine,
-      playerCruiser,
-      playerBattleship,
-      playerCarrier,
-    ];
+    this.updateDomShipProxy();
 
     this.gameState = GameState.placingShips;
   }
@@ -173,10 +176,19 @@ export default class GameManager {
               PlayerShipNames[this.placeShipIndex]
             }`;
             this._battleshipDom.displayMessage(message);
+
+            this.updateDomShipProxy();
           }
         }
       }
     }
+  }
+
+  updateDomShipProxy() {
+    this._battleshipDom.setRotationProxy(
+      this._playerShips[this.placeShipIndex].length,
+      this.placementDirection
+    );
   }
 
   squareHover(e) {
@@ -230,7 +242,9 @@ export default class GameManager {
   }
 
   rotateShip(e) {
-    e.preventDefault();
+    if (e != null && e !== undefined) {
+      e.preventDefault();
+    }
 
     if (this.placementDirection !== Direction.up) {
       this.placementDirection += 1;
@@ -238,9 +252,12 @@ export default class GameManager {
       this.placementDirection = Direction.right;
     }
 
-    this.squareLeave();
-    this.squareHover(e);
+    if (e != null && e !== undefined) {
+      this.squareLeave();
+      this.squareHover(e);
+    }
 
+    this.updateDomShipProxy();
     return false;
   }
 
@@ -259,7 +276,8 @@ export default class GameManager {
         this.doGameOver();
       } else {
         this.gameState = GameState.cpuTurn;
-        this.doCpuTurn();
+        setTimeout(this.doCpuTurn, 500);
+        //this.doCpuTurn();
       }
     }
   }
@@ -317,12 +335,20 @@ export default class GameManager {
         this._init();
         break;
       }
+      case GameMessages.Rotate: {
+        if (this.gameState === GameState.placingShips) {
+          this.rotateShip();
+          this.updateDomShipProxy();
+        }
+        break;
+      }
       default:
         break;
     }
   }
 
   _handleResetMessage() {
+    this.gameState = GameState.reset;
     this._init();
   }
 
@@ -336,14 +362,14 @@ export default class GameManager {
       this.startGame();
       this._battleshipDom.displayMessage('Attack your opponent');
     }
-
-    if (this.gameState === GameState.gameplayStart) {
+    if (this.gameState === GameState.reset) {
+      this._battleshipDom.makePlayerBoardRegular();
+      this._battleshipDom.showPlacementOptions();
+    } else if (this.gameState === GameState.gameplayStart) {
       this._battleshipDom.makePlayerBoardSmall();
+      this._battleshipDom.hidePlacementOptions();
       this.gameState = GameState.playerTurn;
-    }
-
-    // SETUP BOARD VIEWS
-    if (this.gameState === GameState.placingShips) {
+    } else if (this.gameState === GameState.placingShips) {
       const message = `Place your ${PlayerShipNames[this.placeShipIndex]}`;
       this._battleshipDom.displayMessage(message);
       // just show player board

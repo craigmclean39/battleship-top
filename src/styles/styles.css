@@ -63,9 +63,21 @@ body {
   font-family: 'Press Start 2P';
 }
 
-.temp-messages {
+.message-flex {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  margin: 1rem;
+}
+
+.message-flex__text {
   margin: 1rem;
   font-size: 1.4rem;
+  animation-duration: 2s;
+  animation-name: pulse;
+  animation-timing-function: ease-in-out;
+  animation-direction: normal;
+  animation-iteration-count: infinite;
 }
 
 .battleship-title {
@@ -110,30 +122,8 @@ body {
   border: solid 0.2rem #001b29;
 }
 
-@media (max-width: 500px) {
-  .battleship-player-field__battleship-grid {
-    width: clamp(200px, 90vw, 380px);
-    height: clamp(200px, 90vw, 380px);
-  }
-
-  .battleship-playing-field {
-    flex-direction: column;
-  }
-}
-
-@media (min-width: 501px) {
-  .battleship-player-field__battleship-grid {
-    width: 45vw;
-    height: 45vw;
-  }
-
-  .battleship-playing-field {
-    flex-direction: row;
-  }
-}
-
 .battleship-player-field__title {
-  font-size: 1.6rem;
+  font-size: 1.4rem;
 }
 .battleship-player-field__message {
   font-size: 1.5rem;
@@ -141,6 +131,9 @@ body {
   opacity: 0;
 }
 
+.battleship-square {
+  cursor: pointer;
+}
 .battleship-square--empty {
   background-color: transparent;
   border: solid 1px rgba(0, 0, 0, 0.25);
@@ -197,19 +190,112 @@ body {
 .missed-message {
   color: green;
 }
+
+.placement-wrapper {
+  border: solid 1px green;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.placement-wrapper__rotate-button {
+  border: solid 1px red;
+}
+
+.placement-wrapper__rotate-grid {
+  border: solid 1px green;
+  width: 10vw;
+  height: 10vw;
+
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+}
+
+.placement-wrapper__ship-proxy {
+  border: solid 1px blue;
+}
+
+.reset-flex {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.reset-flex__button {
+  font-family: 'Press Start 2P';
+  padding: 1rem;
+  border: solid 5px black;
+  background-color: #c5c5c5;
+}
+
+.reset-flex__button:hover {
+  background-color: grey;
+}
+
 @media (max-width: 500px) {
+  .battleship-player-field__battleship-grid {
+    width: clamp(200px, 90vw, 380px);
+    height: clamp(200px, 90vw, 380px);
+  }
+
+  .battleship-playing-field {
+    flex-direction: column;
+  }
+
   .battleship-player-field__battleship-grid--mini {
     width: clamp(100px, 40vw, 200px);
     height: clamp(100px, 40vw, 200px);
   }
+  .placement-wrapper {
+    flex-direction: row;
+  }
+}
+
+@media (min-width: 501px) {
+  .battleship-player-field__battleship-grid {
+    width: 45vw;
+    height: 45vw;
+  }
+
+  .battleship-playing-field {
+    flex-direction: row;
+    justify-content: space-around;
+  }
+
+  .placement-wrapper {
+    flex-direction: column;
+  }
 }
 
 @keyframes fadeout {
-  from {
+  0% {
     opacity: 1;
   }
 
-  to {
+  60% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0;
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  60% {
+    opacity: 1;
+  }
+
+  100% {
     opacity: 0;
   }
 }

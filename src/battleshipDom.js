@@ -4,6 +4,7 @@ import {
   BoardSpaceStatus,
   AttackStatus,
   BattleshipGridSize,
+  Direction,
 } from './messages';
 
 export default class BattleshipDom {
@@ -11,9 +12,11 @@ export default class BattleshipDom {
     this._sendMessage = null;
     this._resetButtonPressed = this._resetButtonPressed.bind(this);
     this.startGame = this.startGame.bind(this);
+    this.sendRotateMsg = this.sendRotateMsg.bind(this);
 
     this._body = document.querySelector('body');
 
+    this.createElementsForShipPlacement();
     this.createElementsForGameplay();
     this.createElementsForWelcome();
   }
@@ -45,6 +48,33 @@ export default class BattleshipDom {
     this._welcomeWrapper.appendChild(this._welcomeButton);
     this._body.textContent = '';
     this._body.appendChild(this._welcomeWrapper);
+  }
+
+  createElementsForShipPlacement() {
+    this._placementWrapper = DomHelper.createElement(
+      'div',
+      'placement-wrapper'
+    );
+    this._rotateButton = DomHelper.createElement(
+      'button',
+      'placement-wrapper__rotate-button'
+    );
+    this._rotateButton.innerText = 'ROTATE';
+    this._rotateButton.addEventListener('click', this.sendRotateMsg);
+
+    this._rotateGrid = DomHelper.createElement(
+      'div',
+      'placement-wrapper__rotate-grid'
+    );
+
+    this._shipProxy = DomHelper.createElement(
+      'div',
+      'placement-wrapper__ship-proxy'
+    );
+
+    this._placementWrapper.appendChild(this._rotateButton);
+    this._placementWrapper.appendChild(this._rotateGrid);
+    this._rotateGrid.appendChild(this._shipProxy);
   }
 
   createElementsForGameplay() {
@@ -100,8 +130,10 @@ export default class BattleshipDom {
     this._playerMessage.innerText = ' ';
     this._cpuMessage.innerText = ' ';
 
-    this._tempMessages = DomHelper.createElement('div', 'temp-messages');
-    this._tempMessages.innerText = '';
+    this._messageFlex = DomHelper.createElement('div', 'message-flex');
+    this._tempMessages = DomHelper.createElement('h3', 'message-flex__text');
+    this._tempMessages.innerText = ' ';
+    this._messageFlex.appendChild(this._tempMessages);
 
     this._playerField.appendChild(this._playerTitle);
     this._playerField.appendChild(this._playerBoard);
@@ -111,20 +143,23 @@ export default class BattleshipDom {
     this._cpuField.appendChild(this._cpuBoard);
     this._cpuField.appendChild(this._cpuMessage);
 
-    this._resetButton = DomHelper.createElement('button', 'reset-button');
+    this._resetFlex = DomHelper.createElement('div', 'reset-flex');
+    this._resetButton = DomHelper.createElement('button', 'reset-flex__button');
     this._resetButton.innerText = 'Reset';
     this._resetButton.addEventListener('click', this._resetButtonPressed);
+    this._resetFlex.appendChild(this._resetButton);
 
     this._playingField.appendChild(this._cpuField);
+    this._playingField.appendChild(this._placementWrapper);
     this._playingField.appendChild(this._playerField);
   }
 
   setupForGameplay() {
     this._body.textContent = '';
     this._body.appendChild(this._title);
-    this._body.appendChild(this._tempMessages);
+    this._body.appendChild(this._messageFlex);
     this._body.appendChild(this._playingField);
-    this._body.appendChild(this._resetButton);
+    this._body.appendChild(this._resetFlex);
 
     BattleshipDom.createBoard(this._playerBoard);
   }
@@ -139,7 +174,7 @@ export default class BattleshipDom {
   }
 
   setCpuBoard(boardState) {
-    BattleshipDom.setBoard(this._cpuBoard, boardState, 'cpu', false);
+    BattleshipDom.setBoard(this._cpuBoard, boardState, 'cpu', true);
   }
 
   setClickEventHandler(callback) {
@@ -364,5 +399,68 @@ export default class BattleshipDom {
     this._playerBoard.classList.add(
       'battleship-player-field__battleship-grid--mini'
     );
+  }
+
+  makePlayerBoardRegular() {
+    this._playerBoard.classList.remove(
+      'battleship-player-field__battleship-grid--mini'
+    );
+  }
+
+  setRotationProxy(length, direction) {
+    let colStart = 1;
+    let rowStart = 1;
+
+    switch (length) {
+      case 2: {
+        colStart = 3;
+        rowStart = 3;
+        break;
+      }
+      case 3: {
+        if (direction === Direction.left || direction === Direction.right) {
+          colStart = 2;
+          rowStart = 3;
+        } else {
+          colStart = 3;
+          rowStart = 2;
+        }
+        break;
+      }
+      case 4:
+      case 5: {
+        if (direction === Direction.left || direction === Direction.right) {
+          colStart = 1;
+          rowStart = 3;
+        } else {
+          colStart = 3;
+          rowStart = 1;
+        }
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+
+    if (direction === Direction.left || direction === Direction.right) {
+      this._shipProxy.style.gridColumn = `${colStart} / span ${length}`;
+      this._shipProxy.style.gridRow = `${rowStart}`;
+    } else {
+      this._shipProxy.style.gridRow = `${rowStart} / span ${length}`;
+      this._shipProxy.style.gridColumn = `${colStart}`;
+    }
+  }
+
+  sendRotateMsg() {
+    this._sendMessage(GameMessages.Rotate);
+  }
+
+  hidePlacementOptions() {
+    this._placementWrapper.style.display = 'none';
+  }
+
+  showPlacementOptions() {
+    this._placementWrapper.style.display = 'flex';
   }
 }
