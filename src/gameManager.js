@@ -33,7 +33,7 @@ export default class GameManager {
       playerCarrier,
     ];
 
-    let domFleet = this._playerShips.map(GameManager.shipsToDomFleet);
+    const domFleet = this._playerShips.map(GameManager.shipsToDomFleet);
 
     this._battleshipDom = new BattleshipDom(domFleet);
     this._battleshipDom.setClickEventHandler(this.squareClicked);
@@ -306,7 +306,6 @@ export default class GameManager {
       } else {
         this.gameState = GameState.cpuTurn;
         setTimeout(this.doCpuTurn, 250);
-        //this.doCpuTurn();
       }
     }
   }
