@@ -52,12 +52,13 @@ export default class GameManager {
   }
 
   _init() {
-    this.placeShipIndex = 0;
     this.placementDirection = Direction.right;
     this.placementComplete = new Array(this._playerShips.length);
     for (let i = 0; i < this.placementComplete.length; i++) {
       this.placementComplete[i] = false;
     }
+
+    this.setPlacementIndex(0);
 
     this._playerBoard = new GameBoard();
     this._cpuBoard = new GameBoard();
@@ -347,7 +348,7 @@ export default class GameManager {
     } else {
       winLoss = 'You Lost...';
     }
-    this._battleshipDom.displayMessage(`Game Over ${winLoss}`);
+    this._battleshipDom.displayMessage(`Game Over. ${winLoss}`);
   }
 
   receiveMessage(msg) {

@@ -64,10 +64,18 @@ export default class BattleshipDom {
     this._rotateButton.innerText = 'ROTATE';
     this._rotateButton.addEventListener('click', this.sendRotateMsg);
 
+    //this._rotateGridBG = DomHelper.createElement('div', 'placement-wrapper-bg');
     this._rotateGrid = DomHelper.createElement(
       'div',
       'placement-wrapper__rotate-grid'
     );
+
+    for (let i = 0; i < 25; i++) {
+      this._rotateGrid.appendChild(
+        DomHelper.createElement('div', 'placement-wrapper__rotate-grid__empty')
+      );
+    }
+    //this._rotateGridBG.appendChild(this._rotateGrid);
 
     this._shipProxy = DomHelper.createElement(
       'div',
@@ -97,7 +105,7 @@ export default class BattleshipDom {
   }
 
   selectShipForPlacement(e) {
-    console.log(e.target.dataset.index);
+    // console.log(e.target.dataset.index);
     this._selectShip(Number(e.target.dataset.index));
   }
 
@@ -124,8 +132,8 @@ export default class BattleshipDom {
         'fleet-button-wrapper__button'
       );
       // doesn't work btn.alt = this._domFleet[i].name;
-      btn.style.width = `calc(var(--fleetButtonSize) * ${this._domFleet[i].length})`;
-      btn.style.gridColumn = `span ${this._domFleet[i].length}`;
+      //btn.style.width = `calc(var(--fleetButtonSize) * ${this._domFleet[i].length})`;
+      btn.style.gridColumn = `1 / span ${this._domFleet[i].length}`;
       btn.dataset.index = i;
       this._fleetButtonWrapper.appendChild(btn);
     }
@@ -419,6 +427,12 @@ export default class BattleshipDom {
   }
 
   displayMessage(value) {
+    if (value === '') {
+      this._tempMessages.style.display = 'none';
+    } else {
+      this._tempMessages.style.display = 'block';
+    }
+
     this._tempMessages.innerText = value;
   }
 

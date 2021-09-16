@@ -1,6 +1,6 @@
 :root {
   --gridSize: 8;
-  --fleetButtonSize: 10px;
+  --fleetButtonSize: 2rem;
 }
 
 /* press-start-2p-regular - latin */
@@ -97,7 +97,7 @@ body {
 }
 
 .battleship-title__content {
-  font-size: 3rem;
+  font-size: 2.5rem;
 }
 
 .battleship-playing-field {
@@ -138,7 +138,7 @@ body {
   font-size: 1.3rem;
   margin-bottom: 1rem;
   opacity: 0;
-  min-height: 4rem;
+  min-height: 2.6rem;
   padding-left: 1rem;
   padding-right: 1rem;
 }
@@ -146,6 +146,8 @@ body {
 .battleship-square {
   cursor: pointer;
 }
+
+.placement-wrapper__rotate-grid__empty,
 .battleship-square--empty {
   background-color: transparent;
   border: solid 1px rgba(0, 0, 0, 0.25);
@@ -200,13 +202,14 @@ body {
 }
 
 .missed-message {
-  color: #48ad8b;
+  color: #003049;
 }
 
 .placement-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 1rem;
 }
 
 .placement-wrapper__rotate-button {
@@ -214,6 +217,7 @@ body {
   padding: 1rem;
   border: solid 5px black;
   background-color: #c5c5c5;
+  margin: 1rem;
 }
 
 .placement-wrapper__rotate-grid {
@@ -223,12 +227,24 @@ body {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(5, 1fr);
-  background-color: #94d2bd;
-  grid-gap: 1px;
+  background-color: #005f73;
+
+  margin: 1rem;
 }
 
 .placement-wrapper__ship-proxy {
-  background-color: #bb3e03;
+  background-color: #ee9b00;
+  border: solid 3px #b87700;
+}
+
+.fleet-button-wrapper {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  width: max(10vw, 10vh);
+  height: max(10vw, 10vh);
+
+  margin: 1rem;
 }
 
 .reset-flex {
@@ -248,29 +264,25 @@ body {
   background-color: grey;
 }
 
-.fleet-button-wrapper {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  width: 100%;
-  height: 20%;
-}
-
 .fleet-button-wrapper__button {
-  background-color: red;
-  width: var(--fleetButtonSize);
-  height: var(--fleetButtonSize);
+  background-color: #ef1a1e;
   border: none;
   margin: 0.1rem;
+  border: solid 3px #ac2020;
+}
+
+.fleet-button-wrapper__button:hover {
+  background-color: #660708;
 }
 
 .fleet-button__highlight {
-  background-color: maroon;
+  background-color: #660708;
 }
 
 @media (max-width: 500px) {
   .battleship-player-field__battleship-grid {
-    width: clamp(200px, 90vw, 380px);
-    height: clamp(200px, 90vw, 380px);
+    width: clamp(200px, min(90vw, 40vh), 380px);
+    height: clamp(200px, min(90vw, 40vh), 380px);
   }
 
   .battleship-playing-field {
@@ -278,27 +290,49 @@ body {
   }
 
   .battleship-player-field__battleship-grid--mini {
-    width: clamp(100px, 40vw, 200px);
-    height: clamp(100px, 40vw, 200px);
+    width: clamp(100px, 35vw, 200px);
+    height: clamp(100px, 35vw, 200px);
   }
   .placement-wrapper {
     flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .battleship-player-field__message {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    min-height: 2rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .battleship-player-field__title {
+    font-size: 1.2rem;
+  }
+
+  .welcome-wrapper__welcome-title {
+    font-size: 2rem;
   }
 }
 
 @media (min-width: 501px) {
   .battleship-player-field__battleship-grid {
-    width: 45vw;
-    height: 45vw;
+    width: min(40vw, 65vh);
+    height: min(40vw, 65vh);
   }
 
   .battleship-playing-field {
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: center;
   }
 
   .placement-wrapper {
     flex-direction: column;
+  }
+  .battleship-player-field__message {
+    max-width: min(40vw, 65vh);
   }
 }
 
