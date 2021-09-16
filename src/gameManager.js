@@ -387,6 +387,7 @@ export default class GameManager {
     this._init();
     this._battleshipDom.removeAllFleetButtons();
     this._battleshipDom.addFleetButtons();
+    this.setPlacementIndex(0);
   }
 
   setPlacementIndex(newIndex) {
