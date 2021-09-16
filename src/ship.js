@@ -8,6 +8,12 @@ export default class Ship {
     }
   }
 
+  reset() {
+    for (let i = 0; i < this._status.length; i++) {
+      this._status[i] = Ship.hitStatus.unhit;
+    }
+  }
+
   hit(index) {
     if (index < this._status.length) {
       this._status[index] = Ship.hitStatus.hit;

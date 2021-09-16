@@ -58,6 +58,10 @@ export default class GameManager {
       this.placementComplete[i] = false;
     }
 
+    for (let i = 0; i < this._playerShips.length; i++) {
+      this._playerShips[i].reset();
+    }
+
     this.setPlacementIndex(0);
 
     this._playerBoard = new GameBoard();

@@ -64,7 +64,6 @@ export default class BattleshipDom {
     this._rotateButton.innerText = 'ROTATE';
     this._rotateButton.addEventListener('click', this.sendRotateMsg);
 
-    //this._rotateGridBG = DomHelper.createElement('div', 'placement-wrapper-bg');
     this._rotateGrid = DomHelper.createElement(
       'div',
       'placement-wrapper__rotate-grid'
@@ -75,7 +74,6 @@ export default class BattleshipDom {
         DomHelper.createElement('div', 'placement-wrapper__rotate-grid__empty')
       );
     }
-    //this._rotateGridBG.appendChild(this._rotateGrid);
 
     this._shipProxy = DomHelper.createElement(
       'div',
@@ -132,7 +130,6 @@ export default class BattleshipDom {
         'fleet-button-wrapper__button'
       );
       // doesn't work btn.alt = this._domFleet[i].name;
-      //btn.style.width = `calc(var(--fleetButtonSize) * ${this._domFleet[i].length})`;
       btn.style.gridColumn = `1 / span ${this._domFleet[i].length}`;
       btn.dataset.index = i;
       this._fleetButtonWrapper.appendChild(btn);
@@ -382,6 +379,7 @@ export default class BattleshipDom {
     this._playerMessage.textContent = '';
     this._playerMessage.classList.remove('message');
     // Hack to force reflow
+    // eslint-disable-next-line no-unused-expressions
     this._playerMessage.offsetHeight;
     this._playerMessage.classList.add('message');
 
@@ -406,6 +404,7 @@ export default class BattleshipDom {
     this._cpuMessage.textContent = '';
     this._cpuMessage.classList.remove('message');
     // Hack to force reflow
+    // eslint-disable-next-line no-unused-expressions
     this._cpuMessage.offsetHeight;
     this._cpuMessage.classList.add('message');
 
